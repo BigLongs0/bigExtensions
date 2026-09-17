@@ -117,7 +117,7 @@ abstract class SakuraMangas : KeiSource() {
         SMangaUpdate(newDetails.await(), newChapters.await())
     }
 
-    private suspend fun mangaPage(url: String): AccessPage = accessPage("$baseUrl${url.trimEnd('/')}/", "manga-id", 7384916250743186L)
+    private suspend fun mangaPage(url: String): AccessPage = accessPage("$baseUrl${url.trimEnd('/')}/", isChapter = false)
 
     private suspend fun details(page: AccessPage): SManga = client.post(
         "$baseUrl/dist/sakura/models/manga/..__obf__manga_info.php",
@@ -145,7 +145,7 @@ abstract class SakuraMangas : KeiSource() {
 
     override suspend fun getPageList(chapter: SChapter): List<Page> {
         val chapterUrl = "$baseUrl${chapter.url.trimEnd('/')}/"
-        val page = accessPage(chapterUrl, "chapter-id", 8642073195864027L)
+        val page = accessPage(chapterUrl, isChapter = true)
         val token = page.document.requiredAttr("meta[token]", "token")
         val subtoken = page.document.requiredAttr("meta[subtoken]", "subtoken")
         val imageAuth = Crypto.decodeMeta(page.document.requiredAttr("meta[name=poly-auth]", "content"))
@@ -209,21 +209,24 @@ abstract class SakuraMangas : KeiSource() {
         return GET(url.newBuilder().fragment(null).build(), imageHeaders)
     }
 
-    private suspend fun accessPage(url: String, idAttribute: String, key: Long): AccessPage = access.getPage(client, url, headers, baseUrl).use { response ->
+    private suspend fun accessPage(url: String, isChapter: Boolean): AccessPage = access.getPage(client, url, headers, baseUrl).use { response ->
         val userAgent = response.request.header("User-Agent") ?: headers["User-Agent"]
             ?: throw IOException("User-Agent não disponível.")
         val document = response.asJsoup()
-        val challenge = Crypto.decodeMeta(document.requiredAttr("meta[name=header-challenge]", "content"))
+        val rawChallenge = document.requiredAttr("meta[name=header-challenge]", "content")
+        val challenge = if (isChapter) Crypto.decodeMeta(rawChallenge) else rawChallenge
+        val proof = if (isChapter) Crypto.proof(challenge, 8642073195864027L, userAgent) else MangaAuth.proof(challenge, userAgent)
         val authHeaders = headers.newBuilder()
             .set("User-Agent", userAgent)
             .set("Referer", url)
             .set("X-CSRF-TOKEN", document.requiredAttr("meta[name=csrf-token]", "content"))
             .set("X-Requested-With", "XMLHttpRequest")
-            .set("X-Client-Signature", "Q8V4N7X2M9R5T6K3")
+            .set("X-Client-Signature", if (isChapter) "Q8V4N7X2M9R5T6K3" else MangaAuth.CLIENT_SIGNATURE)
             .set("X-Verification-Key-1", "3c8d6e4a-7f21-4b90-a6d5-19e2f7c8b4a1")
             .set("X-Verification-Key-2", "b7a1e9f3-2d64-48c5-90ab-6f31d8e7c2b9")
             .build()
-        AccessPage(document, document.requiredAttr("meta[$idAttribute]", idAttribute), authHeaders, challenge, Crypto.proof(challenge, key, userAgent))
+        val idAttribute = if (isChapter) "chapter-id" else "manga-id"
+        AccessPage(document, document.requiredAttr("meta[$idAttribute]", idAttribute), authHeaders, challenge, proof)
     }
 
     private class AccessPage(
