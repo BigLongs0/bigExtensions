@@ -78,6 +78,10 @@ data class MangaDto(
 @Serializable
 data class MangaDetailsResponse(
     val manga: MangaDto,
+)
+
+@Serializable
+class ChapterListResponse(
     val chapters: List<ChapterDto>,
 )
 

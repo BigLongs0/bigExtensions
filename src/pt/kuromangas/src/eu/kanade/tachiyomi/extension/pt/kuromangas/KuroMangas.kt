@@ -155,15 +155,18 @@ abstract class KuroMangas :
 
     // ============================= Chapters ===============================
 
+    // The details endpoint only carries the newest 60 chapters, so the whole list is requested here.
     override fun chapterListRequest(manga: SManga): Request {
         val mangaId = manga.url.substringAfterLast("/")
-        return GET("$apiUrl/mangas/$mangaId", headers)
+        val url = "$apiUrl/mangas/$mangaId/chapters".toHttpUrl().newBuilder()
+            .addQueryParameter("all", "true")
+            .build()
+        return GET(url, headers)
     }
 
     override fun chapterListParse(response: Response): List<SChapter> {
-        val result = response.parseAs<MangaDetailsResponse>()
-        val mangaId = result.manga.id
-        return result.chapters
+        val mangaId = response.request.url.pathSegments.let { it[it.lastIndex - 1] }.toInt()
+        return response.parseAs<ChapterListResponse>().chapters
             .map { it.toSChapter(mangaId, dateFormat) }
             .sortedByDescending { it.chapter_number }
     }
