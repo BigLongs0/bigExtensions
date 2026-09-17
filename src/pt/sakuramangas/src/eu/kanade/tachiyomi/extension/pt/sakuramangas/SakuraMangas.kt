@@ -36,11 +36,13 @@ import java.time.Instant
 abstract class SakuraMangas : KeiSource() {
 
     private val access = Access()
+    private val ciphers by lazy { Ciphers(client, baseUrl) }
 
     private val webViewUserAgent by lazy {
         WebSettings.getDefaultUserAgent(applicationContext)
             .replace(WEBVIEW_PLATFORM, "; Android 10; K)")
             .replace(WEBVIEW_VERSION, "Chrome/")
+            .replace(CHROME_VERSION, "Chrome/$1.0.0.0")
     }
 
     override fun Headers.Builder.configureHeaders(): Headers.Builder {
@@ -149,7 +151,8 @@ abstract class SakuraMangas : KeiSource() {
         val token = page.document.requiredAttr("meta[token]", "token")
         val subtoken = page.document.requiredAttr("meta[subtoken]", "subtoken")
         val imageAuth = Crypto.decodeMeta(page.document.requiredAttr("meta[name=poly-auth]", "content"))
-        val endpoint = "$baseUrl/dist/sakura/models/capitulo/__dagora__capitulos__read.php".toHttpUrl()
+        val decodeKey: suspend (String) -> ByteArray = { ciphers.decrypt(it, subtoken, page.headers) }
+        val endpoint = "$baseUrl/dist/sakura/models/capitulo/__hellsing__capitulos__read.php".toHttpUrl()
         fun signal(forceCaptcha: Boolean, reason: String, count: Int): String {
             val value = SignalDto(page.id.toLong(), Instant.now().epochSecond, forceCaptcha, reason, count, Access.isAndroid)
             return Crypto.encryptSignal(value.toJsonString(), subtoken, page.id, token)
@@ -172,7 +175,7 @@ abstract class SakuraMangas : KeiSource() {
         }
         var reader = read()
         if (reader.status == "captcha_required") {
-            val verification = reader.verification(subtoken)
+            val verification = reader.verification(subtoken, decodeKey)
             val startedAt = System.currentTimeMillis()
             delay(verification.waitMillis)
             val body = page.body()
@@ -188,7 +191,7 @@ abstract class SakuraMangas : KeiSource() {
             if (result.status != "captcha_ok") throw IOException("Não foi possível concluir a verificação do leitor. Tente novamente.")
             reader = read()
         }
-        return reader.toPages(subtoken, chapterUrl.toHttpUrl(), imageAuth)
+        return reader.toPages(chapterUrl.toHttpUrl(), imageAuth, decodeKey)
     }
 
     override fun imageRequest(page: Page): Request {
@@ -200,10 +203,10 @@ abstract class SakuraMangas : KeiSource() {
             .set("Referer", page.url)
             .set("Accept", "image/webp,image/svg+xml,image/*,*/*;q=0.8")
             .set("Content-Type", "application/octet-stream")
-            .set("X-Request", "45931497111523530")
-            .set("X-Sigma", "v5-fetch")
-            .set("X-Harry", "patronum")
-            .set("X-Sakura", "sectron")
+            .set("X-Request", "4593149711152353")
+            .set("X-Sigma", "v6-fetch")
+            .set("X-Harry-Potter", "patronum")
+            .set("X-Sakura", "novasectron")
             .set(auth[0], auth[1])
             .build()
         return GET(url.newBuilder().fragment(null).build(), imageHeaders)
@@ -213,15 +216,19 @@ abstract class SakuraMangas : KeiSource() {
         val userAgent = response.request.header("User-Agent") ?: headers["User-Agent"]
             ?: throw IOException("User-Agent não disponível.")
         val document = response.asJsoup()
-        val rawChallenge = document.requiredAttr("meta[name=header-challenge]", "content")
-        val challenge = if (isChapter) Crypto.decodeMeta(rawChallenge) else rawChallenge
-        val proof = if (isChapter) Crypto.proof(challenge, 8642073195864027L, userAgent) else MangaAuth.proof(challenge, userAgent)
+        val challenge = document.requiredAttr("meta[name=header-challenge]", "content")
+        val proof = if (isChapter) ChapterAuth.proof(challenge, userAgent) else MangaAuth.proof(challenge, userAgent)
         val authHeaders = headers.newBuilder()
             .set("User-Agent", userAgent)
-            .set("Referer", url)
+            .set("Origin", baseUrl)
+            .set("Sec-Fetch-Site", "same-origin")
+            .set("Sec-Fetch-Mode", "cors")
+            .set("Sec-Fetch-Dest", "empty")
+            .removeAll("Sec-Fetch-User")
+            .removeAll("Referer")
             .set("X-CSRF-TOKEN", document.requiredAttr("meta[name=csrf-token]", "content"))
             .set("X-Requested-With", "XMLHttpRequest")
-            .set("X-Client-Signature", if (isChapter) "Q8V4N7X2M9R5T6K3" else MangaAuth.CLIENT_SIGNATURE)
+            .set("X-Client-Signature", if (isChapter) ChapterAuth.CLIENT_SIGNATURE else MangaAuth.CLIENT_SIGNATURE)
             .set("X-Verification-Key-1", "3c8d6e4a-7f21-4b90-a6d5-19e2f7c8b4a1")
             .set("X-Verification-Key-2", "b7a1e9f3-2d64-48c5-90ab-6f31d8e7c2b9")
             .build()
@@ -268,6 +275,7 @@ abstract class SakuraMangas : KeiSource() {
     companion object {
         private val WEBVIEW_PLATFORM = Regex("; Android .*?\\)")
         private val WEBVIEW_VERSION = Regex("Version/.* Chrome/")
+        private val CHROME_VERSION = Regex("Chrome/(\\d+)[\\d.]*")
         private const val PAGE_SIZE = 30
         private const val CHAPTER_PAGE_SIZE = 100
     }

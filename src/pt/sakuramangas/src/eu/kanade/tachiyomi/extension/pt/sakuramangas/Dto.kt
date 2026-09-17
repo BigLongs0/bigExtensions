@@ -143,26 +143,26 @@ internal class ReaderDto(
     val status: String,
     private val data: JsonElement? = null,
 ) {
-    fun verification(subtoken: String): ReaderVerificationDto = data?.parseAs<VerificationEnvelope>()?.decode(subtoken)
+    suspend fun verification(subtoken: String, decodeKey: suspend (String) -> ByteArray): ReaderVerificationDto = data?.parseAs<VerificationEnvelope>()?.decode(subtoken, decodeKey)
         ?: throw IOException("Resposta de verificação inválida.")
 
-    fun toPages(subtoken: String, chapterUrl: HttpUrl, imageAuth: String): List<Page> {
+    suspend fun toPages(chapterUrl: HttpUrl, imageAuth: String, decodeKey: suspend (String) -> ByteArray): List<Page> {
         if (status != "success") {
             throw IOException("Abra este capítulo na WebView e conclua a verificação do site. Depois tente novamente.")
         }
         val reader = data?.parseAs<ReaderDataDto>() ?: throw IOException("Resposta do leitor sem páginas.")
-        return reader.toPages(subtoken, chapterUrl, imageAuth)
+        return reader.toPages(chapterUrl, imageAuth, decodeKey)
     }
 }
 
 @Serializable
 internal class ReaderDataDto(
-    private val encryptedEphemeralKey: EphemeralKeyDto,
+    private val encryptedEphemeralKey: String,
     private val encryptedImageKey: String,
     private val encryptedUrls: String,
 ) {
-    fun toPages(subtoken: String, chapterUrl: HttpUrl, imageAuth: String): List<Page> {
-        val ephemeralKey = encryptedEphemeralKey.decrypt(subtoken)
+    suspend fun toPages(chapterUrl: HttpUrl, imageAuth: String, decodeKey: suspend (String) -> ByteArray): List<Page> {
+        val ephemeralKey = decodeKey(encryptedEphemeralKey)
         val imageKey = Crypto.decrypt(encryptedImageKey, ephemeralKey, 1)
         val decoded = Crypto.decrypt(encryptedUrls, imageKey, 0).toString(Charsets.UTF_8).parseAs<JsonElement>()
         val urls = if (decoded is JsonArray) decoded.parseAs<List<String>>() else decoded.parseAs<PageRangeDto>().urls()
@@ -176,12 +176,12 @@ internal class ReaderDataDto(
 
 @Serializable
 internal class EphemeralKeyDto(
-    private val cipher: String,
-    private val payload: String,
-    private val mode: Int? = null,
-) {
-    fun decrypt(subtoken: String) = Ciphers.decrypt(cipher, payload, subtoken, mode)
-}
+    val cipher: String,
+    val payload: String,
+    val mode: Int? = null,
+    val cipherScript: String,
+    val masterScript: String? = null,
+)
 
 @Serializable
 internal class PageRangeDto(
@@ -202,12 +202,13 @@ internal class FilterDataDto(val genres: List<String>, val themes: List<String>)
 
 @Serializable
 internal class VerificationEnvelope(
-    private val encryptedEphemeralKey: EphemeralKeyDto? = null,
+    private val encryptedEphemeralKey: String? = null,
     private val encryptedPayloadKey: String,
     private val encryptedPayload: String,
 ) {
-    fun decode(subtoken: String): ReaderVerificationDto {
-        val ephemeralKey = encryptedEphemeralKey?.decrypt(subtoken) ?: subtoken.toByteArray(Charsets.ISO_8859_1)
+    suspend fun decode(subtoken: String, decodeKey: suspend (String) -> ByteArray): ReaderVerificationDto {
+        val ephemeralKey = encryptedEphemeralKey?.let { decodeKey(it) }
+            ?: subtoken.toByteArray(Charsets.ISO_8859_1)
         val key = Crypto.decrypt(encryptedPayloadKey, ephemeralKey, 1)
         return Crypto.decrypt(encryptedPayload, key, 0).toString(Charsets.UTF_8).parseAs()
     }

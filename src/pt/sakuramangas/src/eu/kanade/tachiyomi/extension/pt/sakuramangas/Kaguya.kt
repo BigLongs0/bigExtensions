@@ -21,49 +21,33 @@ internal object Kaguya {
     private fun transform(input: ByteArray, secret: ByteArray, version: Int, decrypt: Boolean): ByteArray {
         val key = if (secret.isEmpty()) byteArrayOf(0) else secret
         val initial = seed(key, version)
-        val random = initial.copyOf()
-        val table = IntArray(256) { it }
-        for (i in 255 downTo 1) {
-            val j = ((next(random).toLong() and 0xffffffffL) % (i + 1)).toInt()
-            val value = table[i]
-            table[i] = table[j]
-            table[j] = value
-        }
-        val inverse = IntArray(256)
-        table.forEachIndexed { i, value -> inverse[value] = i }
-        var a = initial[0] and 255
-        var b = initial[1] and 255
-        var c = initial[2] and 255
-        var d = initial[3] and 255
-        val selector = (initial[0] xor (initial[1] ushr 8) xor (initial[2] ushr 16) xor (initial[3] ushr 24) xor version) and 3
+        val table = table(initial, version)
+        var a = initial[0]
+        var b = initial[1]
+        var c = initial[2]
+        var d = initial[3]
+        val multiplier = if (version == 1) 13 else 5
+        val inverse = if (version == 1) 197 else 205
         return ByteArray(input.size) { i ->
             val value = input[i].toInt() and 255
             val k = key[i % key.size].toInt() and 255
-            val mode = (selector + ((i ushr 6) and 3)) and 3
-            val mixed = (a + b + d + k + i + selector * 13) and 255
-            val shift = ((c + k + mode + i) and 7) + 1
+            val stream = table[(i + a + (k xor d)) and 255]
+            val shift = (b + stream + version) and 7
+            val mixed = (stream + rotateLeft(a, 1) + k + i * 3 + version * 41) and 255
+            val offset = (c + stream + i + version * 53) and 255
             val result = if (decrypt) {
-                when (mode) {
-                    0 -> rotateRight((inverse[((value - (b xor c)) and 255) xor a] - d) and 255, shift) xor mixed
-                    1 -> rotateLeft(inverse[((value - a) and 255) xor b] xor d, shift) - mixed
-                    2 -> (rotateRight((inverse[((value xor a) - d) and 255] - b) and 255, shift) - mixed) xor c
-                    else -> rotateLeft(inverse[((value xor d) - a) and 255] xor b, shift) + mixed
-                }
+                val rotated = rotateRight(((value - offset) * inverse) and 255, shift)
+                swap((rotated - (b xor k) - d) and 255, version) xor mixed
             } else {
-                when (mode) {
-                    0 -> (table[(rotateLeft(value xor mixed, shift) + d) and 255] xor a) + (b xor c)
-                    1 -> (table[rotateRight((value + mixed) and 255, shift) xor d] xor b) + a
-                    2 -> (table[(rotateLeft(((value xor c) + mixed) and 255, shift) + b) and 255] + d) xor a
-                    else -> (table[rotateRight((value - mixed) and 255, shift) xor b] + a) xor d
-                }
-            } and 255
+                val rotated = rotateLeft((swap(value xor mixed, version) + (b xor k) + d) and 255, shift)
+                (rotated * multiplier + offset) and 255
+            }
             val plain = if (decrypt) result else value
             val encrypted = if (decrypt) value else result
-            val feedback = (plain + encrypted + k + i + mode * 17) and 255
-            val nextA = table[a xor feedback xor d]
-            val nextB = (b + plain + mode * 29 + (encrypted xor k)) and 255
-            val nextC = (c xor nextA xor encrypted xor k xor (mode * 41)) and 255
-            d = table[(d + nextB + i + (plain xor encrypted)) and 255]
+            val nextA = (a + encrypted + stream + i + 23) and 255
+            val nextB = rotateLeft(b xor plain xor k, 3)
+            val nextC = (c + swap(encrypted, 0) + d + version * 11) and 255
+            d = d xor rotateLeft((plain + encrypted + stream) and 255, 1) xor nextA
             a = nextA
             b = nextB
             c = nextC
@@ -72,30 +56,38 @@ internal object Kaguya {
     }
 
     private fun seed(key: ByteArray, version: Int): IntArray {
-        var a = 2738958700L.toInt() xor (version * 2654435769L.toInt())
-        var b = 3355524772L.toInt() xor (version * 2135587861)
-        var c = 2911926141L.toInt() xor (version * 2496678331L.toInt())
-        var d = 2123724318 xor (version * 625341585)
+        var a = (211 + version * 41) and 255
+        var b = (113 xor (version * 183)) and 255
+        var c = (76 + version * 99) and 255
+        var d = (169 xor (version * 93)) and 255
         key.forEachIndexed { i, byte ->
-            val mixed = (byte.toInt() and 255) + (i + 1) * 1831565813 + version * 2246822519L.toInt()
-            a = Integer.rotateLeft(a + (mixed xor d), 5)
-            b = Integer.rotateLeft(b xor mixed xor a, 9) + c
-            c = Integer.rotateLeft(c + b + (mixed xor a), 13)
-            d = Integer.rotateLeft(d xor c xor mixed, 18) + a
+            val mixed = ((byte.toInt() and 255) + i * 37 + version * 19) and 255
+            a = rotateLeft((a + mixed + d) and 255, ((b xor mixed) and 7) + 1)
+            b = b xor swap((mixed + a) and 255, 1)
+            c = (c + rotateLeft(b xor mixed, 3) + i) and 255
+            d = (d * 5 + c + (mixed xor a) + 39) and 255
         }
         return intArrayOf(a, b, c, d)
     }
 
-    private fun next(state: IntArray): Int {
-        val result = Integer.rotateLeft(state[1] * 5, 7) * 9
-        val mixed = state[1] shl 9
-        state[2] = state[2] xor state[0]
-        state[3] = state[3] xor state[1]
-        state[1] = state[1] xor state[2]
-        state[0] = state[0] xor state[3]
-        state[2] = state[2] xor mixed
-        state[3] = Integer.rotateLeft(state[3], 11)
-        return result + 1831565813
+    private fun table(initial: IntArray, version: Int): IntArray {
+        var a = initial[0]
+        var b = initial[1]
+        var c = initial[2]
+        var d = initial[3]
+        return IntArray(256) { i ->
+            a = (a + d + i + 61) and 255
+            b = rotateLeft(b xor a xor ((i * 13) and 255), (c + i) and 7)
+            c = (c + swap(b, 0) + (d xor i)) and 255
+            d = (d * 5 + a + c + version * 29 + 17) and 255
+            a xor rotateLeft(b, 1) xor rotateRight(c, 2) xor d
+        }
+    }
+
+    private fun swap(value: Int, version: Int): Int = if (version == 1) {
+        ((value and 51) shl 2) or ((value and 204) ushr 2)
+    } else {
+        ((value and 85) shl 1) or ((value and 170) ushr 1)
     }
 
     private fun rotateLeft(value: Int, shift: Int): Int = ((value shl (shift and 7)) or (value ushr (8 - (shift and 7)))) and 255
