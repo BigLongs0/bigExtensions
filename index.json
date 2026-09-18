@@ -3,7 +3,7 @@
   "badgeLabel": "BIG",
   "signingKey": "8a6ca214f361cd7f23bd67304c6297e8ac89977be0368fe17e32ee51ff09e9d2",
   "contact": {
-    "website": "https://github.com/BigLongss/bigExtensions"
+    "website": "https://github.com/BigLongs0/bigExtensions"
   },
   "extensionList": {
     "extensions": [
@@ -11,9 +11,9 @@
         "name": "Asura Scans",
         "packageName": "eu.kanade.tachiyomi.extension.en.asurascans",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-en.asurascans-v1.6.70.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/en/asurascans/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-en.asurascans-v1.6.70.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.asurascans-v1.6.70.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/en/asurascans/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.asurascans-v1.6.70.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "70",
@@ -32,9 +32,9 @@
         "name": "Atsumaru",
         "packageName": "eu.kanade.tachiyomi.extension.en.atsumaru",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-en.atsumaru-v1.6.1.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/en/atsumaru/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-en.atsumaru-v1.6.1.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.atsumaru-v1.6.1.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/en/atsumaru/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.atsumaru-v1.6.1.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "1",
@@ -53,9 +53,9 @@
         "name": "Comix",
         "packageName": "eu.kanade.tachiyomi.extension.en.comix",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-en.comix-v1.6.37.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/en/comix/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-en.comix-v1.6.37.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.comix-v1.6.37.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/en/comix/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.comix-v1.6.37.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "37",
@@ -78,9 +78,9 @@
         "name": "Kagane",
         "packageName": "eu.kanade.tachiyomi.extension.en.kagane",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-en.kagane-v1.6.31.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/en/kagane/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-en.kagane-v1.6.31.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.kagane-v1.6.31.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/en/kagane/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.kagane-v1.6.31.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "31",
@@ -99,9 +99,9 @@
         "name": "MangaBall",
         "packageName": "eu.kanade.tachiyomi.extension.en.mangaball",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-en.mangaball-v1.6.1.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/en/mangaball/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-en.mangaball-v1.6.1.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.mangaball-v1.6.1.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/en/mangaball/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.mangaball-v1.6.1.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "1",
@@ -120,9 +120,9 @@
         "name": "MangaDot",
         "packageName": "eu.kanade.tachiyomi.extension.en.mangadot",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-en.mangadot-v1.6.1.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/en/mangadot/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-en.mangadot-v1.6.1.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.mangadot-v1.6.1.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/en/mangadot/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.mangadot-v1.6.1.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "1",
@@ -141,9 +141,9 @@
         "name": "MangaFire",
         "packageName": "eu.kanade.tachiyomi.extension.en.mangafire",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-en.mangafire-v1.6.32.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/en/mangafire/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-en.mangafire-v1.6.32.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.mangafire-v1.6.32.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/en/mangafire/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.mangafire-v1.6.32.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "32",
@@ -162,9 +162,9 @@
         "name": "OniSaga",
         "packageName": "eu.kanade.tachiyomi.extension.en.onisaga",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-en.onisaga-v1.6.4.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/en/onisaga/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-en.onisaga-v1.6.4.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.onisaga-v1.6.4.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/en/onisaga/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.onisaga-v1.6.4.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "4",
@@ -183,9 +183,9 @@
         "name": "AstraToons",
         "packageName": "eu.kanade.tachiyomi.extension.pt.astratoons",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.astratoons-v1.6.2.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/pt/astratoons/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.astratoons-v1.6.2.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.astratoons-v1.6.2.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/astratoons/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.astratoons-v1.6.2.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "2",
@@ -204,9 +204,9 @@
         "name": "Aura Toons",
         "packageName": "eu.kanade.tachiyomi.extension.pt.auratoons",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.auratoons-v1.6.2.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/pt/auratoons/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.auratoons-v1.6.2.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.auratoons-v1.6.2.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/auratoons/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.auratoons-v1.6.2.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "2",
@@ -225,9 +225,9 @@
         "name": "CorujaToon",
         "packageName": "eu.kanade.tachiyomi.extension.pt.corujatoon",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.corujatoon-v1.6.2.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/pt/corujatoon/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.corujatoon-v1.6.2.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.corujatoon-v1.6.2.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/corujatoon/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.corujatoon-v1.6.2.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "2",
@@ -246,9 +246,9 @@
         "name": "Imperio da Britannia",
         "packageName": "eu.kanade.tachiyomi.extension.pt.imperiodabritannia",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.imperiodabritannia-v1.6.2.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/pt/imperiodabritannia/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.imperiodabritannia-v1.6.2.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.imperiodabritannia-v1.6.2.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/imperiodabritannia/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.imperiodabritannia-v1.6.2.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "2",
@@ -267,9 +267,9 @@
         "name": "Ink Scan",
         "packageName": "eu.kanade.tachiyomi.extension.pt.inkscan",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.inkscan-v1.6.2.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/pt/inkscan/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.inkscan-v1.6.2.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.inkscan-v1.6.2.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/inkscan/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.inkscan-v1.6.2.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "2",
@@ -288,9 +288,9 @@
         "name": "KuroMangas",
         "packageName": "eu.kanade.tachiyomi.extension.pt.kuromangas",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/b0fde6e/tachiyomi-pt.kuromangas-v1.4.16.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/pt/kuromangas/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/b0fde6e/tachiyomi-pt.kuromangas-v1.4.16.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/b0fde6e/tachiyomi-pt.kuromangas-v1.4.16.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/kuromangas/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/b0fde6e/tachiyomi-pt.kuromangas-v1.4.16.jar"
         },
         "extensionLib": "1.4",
         "versionCode": "16",
@@ -309,9 +309,9 @@
         "name": "LoversToon",
         "packageName": "eu.kanade.tachiyomi.extension.pt.loverstoon",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.loverstoon-v1.6.1.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/pt/loverstoon/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.loverstoon-v1.6.1.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.loverstoon-v1.6.1.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/loverstoon/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.loverstoon-v1.6.1.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "1",
@@ -330,9 +330,9 @@
         "name": "MangaLivre.blog",
         "packageName": "eu.kanade.tachiyomi.extension.pt.mangalivreblog",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.mangalivreblog-v1.6.2.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/pt/mangalivreblog/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.mangalivreblog-v1.6.2.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.mangalivreblog-v1.6.2.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/mangalivreblog/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.mangalivreblog-v1.6.2.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "2",
@@ -351,9 +351,9 @@
         "name": "MangaLivre.org",
         "packageName": "eu.kanade.tachiyomi.extension.pt.mangalivreorg",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.mangalivreorg-v1.6.9.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/pt/mangalivreorg/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.mangalivreorg-v1.6.9.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.mangalivreorg-v1.6.9.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/mangalivreorg/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.mangalivreorg-v1.6.9.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "9",
@@ -372,9 +372,9 @@
         "name": "Mangas Brasuka",
         "packageName": "eu.kanade.tachiyomi.extension.pt.mangasbrasuka",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.mangasbrasuka-v1.6.57.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/pt/mangasbrasuka/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.mangasbrasuka-v1.6.57.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.mangasbrasuka-v1.6.57.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/mangasbrasuka/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.mangasbrasuka-v1.6.57.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "57",
@@ -393,9 +393,9 @@
         "name": "MangaStop",
         "packageName": "eu.kanade.tachiyomi.extension.pt.mangastop",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.mangastop-v1.6.2.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/pt/mangastop/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.mangastop-v1.6.2.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.mangastop-v1.6.2.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/mangastop/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.mangastop-v1.6.2.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "2",
@@ -414,9 +414,9 @@
         "name": "MangoToons",
         "packageName": "eu.kanade.tachiyomi.extension.pt.mangotoons",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.mangotoons-v1.6.2.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/pt/mangotoons/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.mangotoons-v1.6.2.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.mangotoons-v1.6.2.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/mangotoons/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.mangotoons-v1.6.2.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "2",
@@ -435,9 +435,9 @@
         "name": "Nexus Mang\u00e1s",
         "packageName": "eu.kanade.tachiyomi.extension.pt.nexusmangas",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.nexusmangas-v1.6.2.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/pt/nexusmangas/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.nexusmangas-v1.6.2.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.nexusmangas-v1.6.2.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/nexusmangas/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.nexusmangas-v1.6.2.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "2",
@@ -456,9 +456,9 @@
         "name": "NoxManga",
         "packageName": "eu.kanade.tachiyomi.extension.pt.remangas",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/e26a08c/tachiyomi-pt.remangas-v1.6.55.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/pt/remangas/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/e26a08c/tachiyomi-pt.remangas-v1.6.55.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/e26a08c/tachiyomi-pt.remangas-v1.6.55.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/remangas/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/e26a08c/tachiyomi-pt.remangas-v1.6.55.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "55",
@@ -477,9 +477,9 @@
         "name": "Sakura Mang\u00e1s",
         "packageName": "eu.kanade.tachiyomi.extension.pt.sakuramangas",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5aceb64/tachiyomi-pt.sakuramangas-v1.6.13.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/pt/sakuramangas/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5aceb64/tachiyomi-pt.sakuramangas-v1.6.13.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5aceb64/tachiyomi-pt.sakuramangas-v1.6.13.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/sakuramangas/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5aceb64/tachiyomi-pt.sakuramangas-v1.6.13.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "13",
@@ -498,9 +498,9 @@
         "name": "Yomu Comics",
         "packageName": "eu.kanade.tachiyomi.extension.pt.sssscanlator",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.sssscanlator-v1.6.62.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/pt/sssscanlator/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.sssscanlator-v1.6.62.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.sssscanlator-v1.6.62.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/sssscanlator/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.sssscanlator-v1.6.62.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "62",
@@ -519,9 +519,9 @@
         "name": "Vegitoons",
         "packageName": "eu.kanade.tachiyomi.extension.pt.vegitoons",
         "resources": {
-          "apkUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.vegitoons-v1.6.14.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongss/bigExtensions@main/src/pt/vegitoons/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongss/bigExtensions/releases/download/5214c83/tachiyomi-pt.vegitoons-v1.6.14.jar"
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.vegitoons-v1.6.14.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/vegitoons/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.vegitoons-v1.6.14.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "14",
