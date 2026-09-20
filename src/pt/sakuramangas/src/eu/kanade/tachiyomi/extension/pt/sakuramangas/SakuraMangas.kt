@@ -152,7 +152,7 @@ abstract class SakuraMangas : KeiSource() {
         val subtoken = page.document.requiredAttr("meta[subtoken]", "subtoken")
         val imageAuth = Crypto.decodeMeta(page.document.requiredAttr("meta[name=poly-auth]", "content"))
         val decodeKey: suspend (String) -> ByteArray = { ciphers.decrypt(it, subtoken, page.headers) }
-        val endpoint = "$baseUrl/dist/sakura/models/capitulo/__hellsing__capitulos__read.php".toHttpUrl()
+        val endpoint = "$baseUrl/dist/sakura/models/capitulo/__megatron__capitulos__read.php".toHttpUrl()
         fun signal(forceCaptcha: Boolean, reason: String, count: Int): String {
             val value = SignalDto(page.id.toLong(), Instant.now().epochSecond, forceCaptcha, reason, count, Access.isAndroid)
             return Crypto.encryptSignal(value.toJsonString(), subtoken, page.id, token)

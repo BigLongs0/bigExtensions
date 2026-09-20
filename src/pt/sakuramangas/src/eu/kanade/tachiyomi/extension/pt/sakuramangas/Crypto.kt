@@ -65,7 +65,7 @@ internal object Crypto {
 
     fun encrypt(value: String, secret: String): String = Kaguya.encrypt(value, secret)
 
-    fun encryptSignal(value: String, subtoken: String, chapterId: String, token: String): String = encrypt(value, "kaguya13-signal-v2:$subtoken:$chapterId:$token")
+    fun encryptSignal(value: String, subtoken: String, chapterId: String, token: String): String = encrypt(value, "kaguya14-signal-v2:$subtoken:$chapterId:$token")
 
     private fun decodeBase64(value: String): ByteArray = value.decodeBase64()?.toByteArray()
         ?: throw IOException("Resposta codificada inválida.")

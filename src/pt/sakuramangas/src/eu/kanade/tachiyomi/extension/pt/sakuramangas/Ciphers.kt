@@ -52,7 +52,7 @@ internal class Ciphers(private val client: OkHttpClient, private val baseUrl: St
 
     private suspend fun script(directory: String, name: String, headers: Headers): String = scriptMutex.withLock {
         require(SCRIPT_NAME.matches(name)) { "Nome de algoritmo inválido." }
-        val url = "$baseUrl/dist/sakura/yggdrasil/$directory/$name.js"
+        val url = "$baseUrl/dist/sakura/_yggdrasil/$directory/$name.js"
         scripts[url] ?: client.get(url, headers).use { response ->
             response.body.string().replace(ASYNC_FUNCTION, "function").replace(AWAIT, "")
         }.also { script ->
@@ -75,6 +75,8 @@ internal class Ciphers(private val client: OkHttpClient, private val baseUrl: St
         private val AWAIT = Regex("\\bawait\\s+")
 
         private val implementation = """
+            globalThis.self = globalThis;
+            globalThis.location = { pathname: "" };
             globalThis.Promise = {
                 resolve: function(value) { return value; },
                 reject: function(error) { throw error; }
