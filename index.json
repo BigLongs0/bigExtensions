@@ -477,13 +477,13 @@
         "name": "Sakura Mang\u00e1s",
         "packageName": "eu.kanade.tachiyomi.extension.pt.sakuramangas",
         "resources": {
-          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/ea09c1b/tachiyomi-pt.sakuramangas-v1.6.14.apk",
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/ed6cfab/tachiyomi-pt.sakuramangas-v1.6.15.apk",
           "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/sakuramangas/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/ea09c1b/tachiyomi-pt.sakuramangas-v1.6.14.jar"
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/ed6cfab/tachiyomi-pt.sakuramangas-v1.6.15.jar"
         },
         "extensionLib": "1.6",
-        "versionCode": "14",
-        "versionName": "1.6.14",
+        "versionCode": "15",
+        "versionName": "1.6.15",
         "contentWarning": "CONTENT_WARNING_MIXED",
         "sources": [
           {
