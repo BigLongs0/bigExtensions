@@ -20,7 +20,8 @@ internal class Access {
     private val mutex = Mutex()
 
     suspend fun getPage(client: OkHttpClient, url: String, headers: Headers, baseUrl: String): Response {
-        if (!isAndroid) return client.get(url, headers)
+        val pageHeaders = resourceHeaders(headers).build()
+        if (!isAndroid) return client.get(url, pageHeaders)
 
         mutex.withLock {
             withContext(Dispatchers.Main) {
@@ -34,7 +35,7 @@ internal class Access {
                     try {
                         val ajaxHeaders = headers.newBuilder().set(HEADER, VALUE).build()
                         client.get(
-                            "$baseUrl/dist/sakura/models/home/__.home_adicionados.php",
+                            verificationUrl(baseUrl),
                             ajaxHeaders,
                             cacheControl = CacheControl.FORCE_NETWORK,
                         ).use { }
@@ -49,11 +50,15 @@ internal class Access {
                 }
             }
         }
-        return client.get(url, headers)
+        return client.get(url, pageHeaders)
     }
 
     companion object {
         val isAndroid = System.getProperty("java.vm.name") == "Dalvik"
+
+        fun verificationUrl(baseUrl: String) = "$baseUrl/dist/sakura/models/home/__.home_adicionados.php"
+
+        fun resourceHeaders(headers: Headers): Headers.Builder = headers.newBuilder().removeAll(HEADER)
 
         private const val HEADER = "X-Requested-With"
         private const val VALUE = "XMLHttpRequest"
