@@ -48,6 +48,7 @@ abstract class SakuraMangas : KeiSource() {
     override fun Headers.Builder.configureHeaders(): Headers.Builder {
         set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
         set("Accept-Language", "pt-BR,pt;q=0.9")
+        if (Access.isAndroid) set("X-Requested-With", "XMLHttpRequest")
         val userAgent = if (Access.isAndroid) webViewUserAgent else get("User-Agent")!!
         val majorVersion = userAgent.substringAfter("Chrome/").substringBefore('.')
         val platform = when {
@@ -67,6 +68,8 @@ abstract class SakuraMangas : KeiSource() {
     }
 
     override fun OkHttpClient.Builder.configureClient() = rateLimit(2)
+
+    override fun getHomeUrl(): String = if (Access.isAndroid) Access.verificationUrl(baseUrl) else baseUrl
 
     override suspend fun getPopularManga(page: Int): MangasPage = getSearchMangaList(page, "", getFilterList(null))
 
@@ -199,7 +202,7 @@ abstract class SakuraMangas : KeiSource() {
         val auth = url.fragment?.split('|', limit = 2)
             ?: throw IOException("Reabra o capítulo para atualizar o acesso às imagens.")
         require(auth.size == 2) { "Autorização de imagem inválida." }
-        val imageHeaders = headers.newBuilder()
+        val imageHeaders = Access.resourceHeaders(headers)
             .set("Referer", page.url)
             .set("Accept", "image/webp,image/svg+xml,image/*,*/*;q=0.8")
             .set("Content-Type", "application/octet-stream")
