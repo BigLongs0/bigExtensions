@@ -152,7 +152,7 @@ abstract class SakuraMangas : KeiSource() {
         val subtoken = page.document.requiredAttr("meta[subtoken]", "subtoken")
         val imageAuth = Crypto.decodeMeta(page.document.requiredAttr("meta[name=poly-auth]", "content"))
         val decodeKey: suspend (String) -> ByteArray = { ciphers.decrypt(it, subtoken, page.headers) }
-        val endpoint = "$baseUrl/dist/sakura/models/capitulo/__megatron__capitulos__read.php".toHttpUrl()
+        val endpoint = "$baseUrl/dist/sakura/models/capitulo/__stron__capitulos__read.php".toHttpUrl()
         fun signal(forceCaptcha: Boolean, reason: String, count: Int): String {
             val value = SignalDto(page.id.toLong(), Instant.now().epochSecond, forceCaptcha, reason, count, Access.isAndroid)
             return Crypto.encryptSignal(value.toJsonString(), subtoken, page.id, token)
@@ -229,8 +229,8 @@ abstract class SakuraMangas : KeiSource() {
             .set("X-CSRF-TOKEN", document.requiredAttr("meta[name=csrf-token]", "content"))
             .set("X-Requested-With", "XMLHttpRequest")
             .set("X-Client-Signature", if (isChapter) ChapterAuth.CLIENT_SIGNATURE else MangaAuth.CLIENT_SIGNATURE)
-            .set("X-Verification-Key-1", "3c8d6e4a-7f21-4b90-a6d5-19e2f7c8b4a1")
-            .set("X-Verification-Key-2", "b7a1e9f3-2d64-48c5-90ab-6f31d8e7c2b9")
+            .set("X-Verification-Key-1", if (isChapter) "3c8d6e4a-7f21-4b90-a6d5-19e2f7c8b4a1" else "6e0b6d0f-5a2c-4e7f-b8c1-3d9472a6f509")
+            .set("X-Verification-Key-2", if (isChapter) "b7a1e9f3-2d64-48c5-90ab-6f31d8e7c2b9" else "d42f8b91-6c37-4a0e-9d25-7e1b53c8af64")
             .build()
         val idAttribute = if (isChapter) "chapter-id" else "manga-id"
         AccessPage(document, document.requiredAttr("meta[$idAttribute]", idAttribute), authHeaders, challenge, proof)

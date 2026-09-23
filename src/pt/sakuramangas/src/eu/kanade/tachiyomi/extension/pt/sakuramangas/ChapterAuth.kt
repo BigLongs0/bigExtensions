@@ -6,7 +6,7 @@ import java.io.IOException
 
 internal object ChapterAuth {
     const val CLIENT_SIGNATURE = "ChapterSig_91bd35f7"
-    private const val CHALLENGE_KEY = "ChapterPulse#e62d90"
+    private const val CHALLENGE_KEY = "ChapterPulse#e62d9"
     private const val PROOF_KEY = "chapter-weave-proof-b83d61e9"
 
     fun proof(challenge: String, userAgent: String): String {
