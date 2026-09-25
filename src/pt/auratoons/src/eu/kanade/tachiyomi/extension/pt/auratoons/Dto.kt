@@ -125,8 +125,18 @@ class ChapterDto(
 
 @Serializable
 class ChapterPagesDto(
+    private val ok: Boolean = false,
     private val urls: List<String> = emptyList(),
+    private val reason: String? = null,
 ) {
+    val gateMessage get() = when {
+        ok -> null
+        reason == "limit_reached" -> "Limite diário de leitura gratuita da Aura Toons atingido. Tente novamente mais tarde."
+        reason == "register_required" -> "A Aura Toons exige uma conta gratuita para continuar lendo hoje."
+        reason != null -> "Capítulo indisponível na Aura Toons ($reason)."
+        else -> null
+    }
+
     fun toPageList(baseUrl: String) = urls.mapIndexed { index, url ->
         Page(index, imageUrl = url.toAbsoluteUrl(baseUrl))
     }

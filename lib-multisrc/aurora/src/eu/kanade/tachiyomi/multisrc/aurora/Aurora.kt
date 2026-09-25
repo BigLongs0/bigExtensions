@@ -13,6 +13,7 @@ import keiyoushi.network.get
 import keiyoushi.network.rateLimit
 import keiyoushi.source.KeiSource
 import keiyoushi.utils.extractNextJs
+import keiyoushi.utils.extractNextJsRsc
 import keiyoushi.utils.parseAs
 import keiyoushi.utils.string
 import kotlinx.serialization.json.JsonObject
@@ -21,6 +22,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import org.jsoup.nodes.Document
+import java.io.IOException
 import kotlin.time.Duration.Companion.seconds
 
 @Source
@@ -102,15 +104,16 @@ abstract class Aurora : KeiSource() {
             .set("next-url", entryURL(chapter.memo).toHttpUrl().encodedPath)
             .set("Accept", "*/*")
             .build()
-        val response = client
-            .newBuilder()
-            .addCookie("mnx_gate_${chapter.chapter_number}" to "1")
-            .build()
-            .get(getChapterUrl(chapter), pageHeaders)
+        val payload = client.get(getChapterUrl(chapter), pageHeaders).use { it.body.string() }
 
-        return response.extractNextJs<PagesDto>()?.toPageList { encodedUrl ->
-            decrypt(encodedUrl, getKey(encodedUrl))
-        } ?: emptyList()
+        payload.extractNextJsRsc<PagesDto>()?.let { pages ->
+            return pages.toPageList { encodedUrl -> decrypt(encodedUrl, getKey(encodedUrl)) }
+        }
+        // The site now asks every reader to pass its partner step before a chapter unlocks.
+        if (payload.extractNextJsRsc<GateDto>() != null) {
+            throw IOException("Abra o capítulo na WebView e conclua a etapa \"Um passo para ler\" do site. Depois volte e tente de novo.")
+        }
+        return emptyList()
     }
 
     private var key: String? = null

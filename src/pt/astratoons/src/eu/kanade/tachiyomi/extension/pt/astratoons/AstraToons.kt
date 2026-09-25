@@ -141,10 +141,13 @@ abstract class AstraToons : KeiSource() {
         }
     }
 
+    // Pages are served as canvas placeholders that the site swaps for an image after loading.
     override suspend fun getPageList(chapter: SChapter): List<Page> = client.get(baseUrl + chapter.url)
         .asJsoup()
-        .select("#reader-container img[src*=/storage/chapters/]")
-        .mapIndexed { index, element -> Page(index, imageUrl = element.absUrl("src")) }
+        .select("#reader-container canvas[data-src], #reader-container img[src]")
+        .map { if (it.hasAttr("data-src")) it.absUrl("data-src") else it.absUrl("src") }
+        .filter { "/storage/chapters/" in it }
+        .mapIndexed { index, url -> Page(index, imageUrl = url) }
 
     private val ajaxHeaders by lazy {
         headersBuilder()

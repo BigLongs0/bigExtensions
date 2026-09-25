@@ -99,10 +99,13 @@ abstract class AuraToons : KeiSource() {
     private suspend fun getMangaDetail(mangaUrl: String): MangaDetailDto? = client.get(baseUrl + mangaUrl, rscHeaders).extractNextJs<MangaDetailDto>()
 
     override suspend fun getPageList(chapter: SChapter): List<Page> {
-        val chapterId = chapter.url.substringAfterLast('/')
-        return client.get("$baseUrl/api/nxtoons/chapter-pages?chapterId=$chapterId")
-            .parseAs<ChapterPagesDto>()
-            .toPageList(baseUrl)
+        val url = "$baseUrl/api/nxtoons/chapter-pages".toHttpUrl().newBuilder()
+            .addQueryParameter("chapterId", chapter.url.substringAfterLast('/'))
+            .addQueryParameter("mangaSlug", chapter.url.substringAfter("/manga/").substringBefore('/'))
+            .build()
+        val result = client.get(url, ensureSuccess = false).parseAs<ChapterPagesDto>()
+        result.gateMessage?.let { throw IOException(it) }
+        return result.toPageList(baseUrl)
     }
 
     override val supportsFilterFetching = true
