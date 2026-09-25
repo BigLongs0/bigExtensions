@@ -22,7 +22,7 @@ class SortFilter :
         "Ordenar por",
         listOf(
             "Atualizados" to "updated_at.desc",
-            "Melhor avaliados" to "avg_rating.desc",
+            "Melhor avaliados" to "avg_rating.desc.nullslast",
             "Adicionados" to "created_at.desc",
             "A-Z" to "title.asc",
         ),

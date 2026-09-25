@@ -134,7 +134,11 @@ abstract class Corujatoon :
             login(force = true)
             response = client.get(url, ensureSuccess = false)
         }
-        if (!response.isSuccessful || response.request.url.pathSegments.firstOrNull() == "login") {
+        if (response.request.url.pathSegments.firstOrNull() == "login") {
+            response.close()
+            throw IOException("A CorujaToon exige login para abrir obras. Entre pela WebView ou informe email e senha nas configurações da extensão.")
+        }
+        if (!response.isSuccessful) {
             val code = response.code
             response.close()
             throw IOException("Acesso recusado ($code). Confira seu login e a disponibilidade do capítulo no site.")
@@ -154,7 +158,7 @@ abstract class Corujatoon :
             .parseAs<CsrfDto>().csrfToken
         val body = FormBody.Builder()
             .add("csrfToken", csrf)
-            .add("identifier", email)
+            .add("email", email)
             .add("password", password)
             .add("callbackUrl", "$baseUrl/home")
             .add("json", "true")
@@ -170,7 +174,7 @@ abstract class Corujatoon :
     override fun setupPreferenceScreen(screen: PreferenceScreen) {
         EditTextPreference(screen.context).apply {
             key = "email"
-            title = "Email ou nome de usuário"
+            title = "Email"
             summary = "Login da CorujaToon. Também é possível entrar pela WebView."
             setDefaultValue("")
             setOnBindEditTextListener { it.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS }

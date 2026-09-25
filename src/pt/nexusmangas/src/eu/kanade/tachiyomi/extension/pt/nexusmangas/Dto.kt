@@ -6,6 +6,7 @@ import eu.kanade.tachiyomi.source.model.SManga
 import keiyoushi.utils.tryParse
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.io.IOException
 import kotlin.time.Instant
 
 @Serializable
@@ -93,11 +94,41 @@ class ChapterDto(
 }
 
 @Serializable
-class ChapterPagesDto(
-    private val pages: List<String> = emptyList(),
+class ChapterIdDto(
+    val id: String,
+)
+
+@Serializable
+class ReadChapterRequestDto(
+    private val chapterId: String,
+)
+
+@Serializable
+class ReadChapterDto(
+    private val access: AccessDto,
+    private val chapter: ReadChapterPagesDto? = null,
 ) {
-    fun toPageList() = pages.mapIndexed { index, imageUrl -> Page(index, imageUrl = imageUrl) }
+    private val pages get() = chapter?.pages.orEmpty()
+
+    // Image links carry the chapter id and index in the fragment so an expired link can be renewed.
+    fun toPageList(chapterId: String): List<Page> {
+        if (!access.allowed) throw IOException("Capítulo bloqueado na Nexus Mangás (${access.reason}).")
+        return pages.mapIndexed { index, url -> Page(index, imageUrl = "$url#$chapterId/$index") }
+    }
+
+    fun pageUrl(index: Int): String = pages.getOrNull(index) ?: throw IOException("Página não encontrada")
 }
+
+@Serializable
+class AccessDto(
+    val allowed: Boolean,
+    val reason: String? = null,
+)
+
+@Serializable
+class ReadChapterPagesDto(
+    val pages: List<String> = emptyList(),
+)
 
 private fun humanize(value: String): String = value.split('_')
     .joinToString(" ") { word -> word.lowercase().replaceFirstChar(Char::uppercase) }

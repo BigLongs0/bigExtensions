@@ -63,10 +63,10 @@ class Value(val name: String)
 
 @Serializable
 class ChapterListDto(
-    val serieSlug: String,
+    val slug: String,
     val chapters: List<ChapterDto>,
 ) {
-    fun toSChapterList(manga: SManga) = chapters.map { it.toSChapter(manga, serieSlug) }
+    fun toSChapterList(manga: SManga) = chapters.map { it.toSChapter(manga, slug) }
 }
 
 @Serializable
@@ -102,6 +102,11 @@ class PagesDto(
         Page(index, imageUrl = decode(image.url))
     }
 }
+
+@Serializable
+class GateDto(
+    val siteGateEnabled: Boolean,
+)
 
 @Serializable
 class ImageDto(

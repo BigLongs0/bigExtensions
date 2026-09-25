@@ -1,5 +1,6 @@
 package eu.kanade.tachiyomi.extension.pt.nexusmangas
 
+import eu.kanade.tachiyomi.network.POST
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.Page
@@ -8,32 +9,80 @@ import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.model.SMangaUpdate
 import keiyoushi.annotation.Source
 import keiyoushi.network.get
+import keiyoushi.network.post
 import keiyoushi.network.rateLimit
 import keiyoushi.source.KeiSource
 import keiyoushi.utils.firstInstanceOrNull
 import keiyoushi.utils.parseAs
 import keiyoushi.utils.toJsonElement
+import keiyoushi.utils.toJsonRequestBody
 import kotlinx.serialization.json.JsonElement
 import okhttp3.Headers
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Response
 import java.io.IOException
 
 @Source
 abstract class NexusMangas : KeiSource() {
 
-    private val apiUrl = "https://supabase.nexusmangas.com/rest/v1"
+    private val apiUrl = "https://$API_HOST/rest/v1"
 
-    override fun OkHttpClient.Builder.configureClient(): OkHttpClient.Builder = rateLimit(3) { it.host == apiUrl.toHttpUrl().host }
+    private val functionsUrl = "https://$API_HOST/functions/v1"
 
-    // The anon key the site ships in its own bundle; PostgREST rejects the request without it.
+    private val pageInterceptor = Interceptor(::renewExpiredPage)
+
+    override fun OkHttpClient.Builder.configureClient(): OkHttpClient.Builder = this
+        .addInterceptor(::authorizeApi)
+        .addInterceptor(pageInterceptor)
+        .rateLimit(3) { it.host == API_HOST }
+
+    // Some apps treat any 403 from a Cloudflare host as a challenge, which would hide an expired link.
+    private val pageClient by lazy {
+        client.newBuilder()
+            .apply { interceptors().removeAll { it === pageInterceptor || it.javaClass.simpleName == "CloudflareInterceptor" } }
+            .build()
+    }
+
     override fun Headers.Builder.configureHeaders(): Headers.Builder = this
         .add("Accept", "application/json")
-        .add("apikey", ANON_KEY)
-        .add("Authorization", "Bearer $ANON_KEY")
 
-    override suspend fun getPopularManga(page: Int): MangasPage = query(page, order = "avg_rating.desc")
+    // The anon key the site ships in its own bundle. It must not reach the presigned image
+    // host, which rejects any request carrying an Authorization header.
+    private fun authorizeApi(chain: Interceptor.Chain): Response {
+        val request = chain.request()
+        if (request.url.host != API_HOST) return chain.proceed(request)
+
+        return chain.proceed(
+            request.newBuilder()
+                .header("apikey", ANON_KEY)
+                .header("Authorization", "Bearer $ANON_KEY")
+                .build(),
+        )
+    }
+
+    // Page links are presigned for 15 minutes, so a slow read or a cached page list can outlive them.
+    private fun renewExpiredPage(chain: Interceptor.Chain): Response {
+        val request = chain.request()
+        val fragment = request.url.fragment
+        if (fragment == null || request.url.host == API_HOST) return chain.proceed(request)
+
+        val response = pageClient.newCall(request).execute()
+        val index = fragment.substringAfter('/').toIntOrNull()
+        if (response.code != 403 || index == null) return response
+
+        response.close()
+        val body = ReadChapterRequestDto(fragment.substringBefore('/')).toJsonRequestBody()
+        val pageUrl = client.newCall(POST("$functionsUrl/read-chapter", readerHeaders, body)).execute()
+            .parseAs<ReadChapterDto>()
+            .pageUrl(index)
+
+        return pageClient.newCall(request.newBuilder().url(pageUrl).build()).execute()
+    }
+
+    override suspend fun getPopularManga(page: Int): MangasPage = query(page, order = "avg_rating.desc.nullslast")
 
     override suspend fun getLatestUpdates(page: Int): MangasPage = query(page, order = "updated_at.desc")
 
@@ -62,7 +111,8 @@ abstract class NexusMangas : KeiSource() {
 
         val url = "$apiUrl/works".toHttpUrl().newBuilder()
             .addQueryParameter("select", "$LIST_COLUMNS$genreJoin")
-            .addQueryParameter("order", order)
+            // Ratings tie a lot, and PostgREST pages overlap unless the order is total.
+            .addQueryParameter("order", "$order,id.desc")
             .addQueryParameter("limit", PAGE_SIZE.toString())
             .addQueryParameter("offset", ((page - 1) * PAGE_SIZE).toString())
             .apply {
@@ -121,14 +171,24 @@ abstract class NexusMangas : KeiSource() {
         val number = segments.getOrNull(3) ?: throw IOException("Capítulo inválido")
 
         val url = "$apiUrl/chapters".toHttpUrl().newBuilder()
-            .addQueryParameter("select", "pages,works!inner(slug)")
+            .addQueryParameter("select", "id,works!inner(slug)")
             .addQueryParameter("works.slug", "eq.$slug")
             .addQueryParameter("number", "eq.$number")
             .addQueryParameter("limit", "1")
             .build()
 
-        return client.get(url).parseAs<List<ChapterPagesDto>>().firstOrNull()?.toPageList()
-            ?: throw IOException("Não achei as páginas do capítulo")
+        val chapterId = client.get(url).parseAs<List<ChapterIdDto>>().firstOrNull()?.id
+            ?: throw IOException("Capítulo não encontrado")
+
+        return client.post("$functionsUrl/read-chapter", readerHeaders, ReadChapterRequestDto(chapterId).toJsonRequestBody())
+            .parseAs<ReadChapterDto>()
+            .toPageList(chapterId)
+    }
+
+    private val readerHeaders by lazy {
+        headersBuilder()
+            .set("x-nexus-client", "reader-v3")
+            .build()
     }
 
     override val supportsFilterFetching: Boolean get() = true
@@ -164,6 +224,7 @@ abstract class NexusMangas : KeiSource() {
     override fun getChapterUrl(chapter: SChapter): String = baseUrl + chapter.url
 
     companion object {
+        private const val API_HOST = "supabase.nexusmangas.com"
         private const val PAGE_SIZE = 30
         private const val LIST_COLUMNS = "id,slug,title,cover_url,status,type"
         private const val DETAIL_COLUMNS =

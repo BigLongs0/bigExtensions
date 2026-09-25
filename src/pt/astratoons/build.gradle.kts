@@ -6,12 +6,12 @@ plugins {
 
 keiyoushi {
     name = "AstraToons"
-    versionCode = 2
+    versionCode = 3
     contentWarning = ContentWarning.MIXED
     libVersion = "1.6"
 
     source {
         lang = "pt-BR"
-        baseUrl = "https://astratoons.com"
+        baseUrl = "https://new.astratoons.com"
     }
 }

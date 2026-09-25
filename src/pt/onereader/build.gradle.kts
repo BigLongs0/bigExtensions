@@ -5,17 +5,18 @@ plugins {
 }
 
 keiyoushi {
-    name = "CorujaToon"
-    versionCode = 3
+    name = "OneReader"
+    versionCode = 1
     contentWarning = ContentWarning.MIXED
     libVersion = "1.6"
 
     source {
-        baseUrl = "https://corujatoon.com"
         lang = "pt-BR"
+        baseUrl = "https://onereader.net"
     }
 
     deeplink {
-        path("/series/..*")
+        path("/obra")
+        path("/leitor")
     }
 }
