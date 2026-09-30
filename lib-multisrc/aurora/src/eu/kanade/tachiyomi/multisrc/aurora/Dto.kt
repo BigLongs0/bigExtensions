@@ -79,7 +79,7 @@ class ChapterDto(
         val type = manga.memo["type"]!!.string
         name = "Capítulo $number"
         date_upload = dateFormat.tryParseDate(releaseDate)
-        chapter_number = number.toFloat()
+        chapter_number = number.toFloatOrNull() ?: -1f
         url = id
         memo = buildJsonObject {
             put("id", id)

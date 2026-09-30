@@ -116,14 +116,16 @@ abstract class Aurora : KeiSource() {
         return emptyList()
     }
 
-    private var key: String? = null
+    // The key belongs to the version and epoch embedded in each payload, so a rotated key needs a new request.
+    @Volatile
+    private var key: Pair<Pair<Int, Int>, String>? = null
+
     suspend fun getKey(payload: String): String {
-        if (!key.isNullOrBlank()) {
-            return key!!
-        }
-        val (v, e) = getParams(payload)
+        val params = getParams(payload)
+        key?.takeIf { it.first == params }?.let { return it.second }
+        val (v, e) = params
         return client.get("$baseUrl/api/atfield/key?v=$v&e=$e").parseAs<KeyDto>().k.also {
-            key = it
+            key = params to it
         }
     }
 }
