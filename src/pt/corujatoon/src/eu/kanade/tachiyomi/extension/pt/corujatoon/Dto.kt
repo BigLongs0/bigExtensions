@@ -29,7 +29,7 @@ class MangaDto(
 ) {
     fun toSManga() = SManga.create().apply {
         url = "/series/$slug"
-        title = this@MangaDto.title
+        title = this@MangaDto.title.trim()
         thumbnail_url = cover
         description = this@MangaDto.description
         author = this@MangaDto.author
@@ -67,7 +67,7 @@ class ChapterDto(
 ) {
     fun toSChapter(slug: String) = SChapter.create().apply {
         url = "/series/$slug/capitulo/${number.toString().removeSuffix(".0")}"
-        name = if (isVip) "🔒 $title" else title
+        name = if (isVip) "🔒 ${title.trim()}" else title.trim()
         chapter_number = number
         date_upload = Instant.tryParse(publishedAt)
     }

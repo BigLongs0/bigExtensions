@@ -132,9 +132,9 @@ abstract class MangaLivreBlog : KeiSource() {
     private fun Document.toSManga(mangaUrl: String) = SManga.create().apply {
         url = mangaUrl
         // The heading also holds a language flag, so only its own text is the title.
-        title = selectFirst("h1.manga-title")?.ownText()?.trim()?.takeIf(String::isNotBlank)
+        title = selectFirst("h1.manga-title")?.ownText()?.takeIf(String::isNotEmpty)
             ?: selectFirst("title")!!.text()
-        thumbnail_url = selectFirst("img.wp-post-image")?.absUrl("src")
+        thumbnail_url = selectFirst("img.manga-cover-image, img.wp-post-image")?.absUrl("src")
         description = selectFirst("meta[name=description]")?.attr("content")?.takeIf(String::isNotBlank)
         status = when (selectFirst("div.manga-status, span.manga-status")?.text()?.trim()) {
             "Em Andamento", "Em Lançamento" -> SManga.ONGOING
@@ -148,11 +148,13 @@ abstract class MangaLivreBlog : KeiSource() {
     private fun toSChapterOrNull(element: Element): SChapter? {
         val href = element.absUrl("href").toHttpUrl()
         val slug = href.pathSegments.getOrNull(1)?.takeIf(String::isNotBlank) ?: return null
-        val label = element.selectFirst("span.chapter-number")?.text()?.trim()
+        // Untitled chapters come labeled "Capítulo 13: Capítulo 13".
+        val label = element.selectFirst("span.chapter-number")?.text()
+            ?.replace(REPEATED_LABEL_REGEX, "$1")
 
         return SChapter.create().apply {
             url = "/capitulo/$slug/"
-            name = label?.takeIf(String::isNotBlank) ?: "Capítulo"
+            name = label?.takeIf(String::isNotEmpty) ?: "Capítulo"
             chapter_number = CHAPTER_NUMBER_REGEX.find(label.orEmpty())?.value?.toFloatOrNull() ?: -1f
         }
     }
@@ -171,7 +173,7 @@ abstract class MangaLivreBlog : KeiSource() {
             .mapNotNull { element ->
                 val slug = element.absUrl("href").toHttpUrl().pathSegments.getOrNull(1)
                     ?.takeIf(String::isNotBlank) ?: return@mapNotNull null
-                val name = element.text().trim().takeIf { it.isNotBlank() && !it.all(Char::isDigit) }
+                val name = element.text().takeIf { it.isNotEmpty() && !it.all(Char::isDigit) }
                     ?: return@mapNotNull null
 
                 GenreEntry(name, slug)
@@ -194,5 +196,6 @@ abstract class MangaLivreBlog : KeiSource() {
 
     companion object {
         private val CHAPTER_NUMBER_REGEX = Regex("""\d+(?:\.\d+)?""")
+        private val REPEATED_LABEL_REGEX = Regex("""^(.+?):\s*\1$""")
     }
 }

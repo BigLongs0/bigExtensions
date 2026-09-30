@@ -93,7 +93,7 @@ abstract class Corujatoon :
         }?.description
         val updated = SManga.create().apply {
             url = manga.url
-            title = result.seriesTitle
+            title = result.seriesTitle.trim()
             thumbnail_url = result.seriesCover ?: document.selectFirst("meta[property=og:image]")?.attr("content")
             this.description = description
             author = details.selectFirst(":matchesOwn(^Autor$)")?.nextElementSibling()?.text()
