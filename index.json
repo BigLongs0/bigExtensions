@@ -78,9 +78,9 @@
         "name": "Kagane",
         "packageName": "eu.kanade.tachiyomi.extension.en.kagane",
         "resources": {
-          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.kagane-v1.6.31.apk",
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/9b120a8/tachiyomi-en.kagane-v1.6.31.apk",
           "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/en/kagane/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.kagane-v1.6.31.jar"
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/9b120a8/tachiyomi-en.kagane-v1.6.31.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "31",
@@ -99,20 +99,20 @@
         "name": "MangaBall",
         "packageName": "eu.kanade.tachiyomi.extension.en.mangaball",
         "resources": {
-          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.mangaball-v1.6.1.apk",
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/9b120a8/tachiyomi-en.mangaball-v1.6.2.apk",
           "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/en/mangaball/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.mangaball-v1.6.1.jar"
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/9b120a8/tachiyomi-en.mangaball-v1.6.2.jar"
         },
         "extensionLib": "1.6",
-        "versionCode": "1",
-        "versionName": "1.6.1",
+        "versionCode": "2",
+        "versionName": "1.6.2",
         "contentWarning": "CONTENT_WARNING_MIXED",
         "sources": [
           {
             "id": "4778354629668307586",
             "name": "MangaBall",
             "language": "en",
-            "homeUrl": "https://mangaball.net"
+            "homeUrl": "https://mangaball.com"
           }
         ]
       },
@@ -141,9 +141,9 @@
         "name": "MangaFire",
         "packageName": "eu.kanade.tachiyomi.extension.en.mangafire",
         "resources": {
-          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.mangafire-v1.6.32.apk",
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/9b120a8/tachiyomi-en.mangafire-v1.6.32.apk",
           "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/en/mangafire/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.mangafire-v1.6.32.jar"
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/9b120a8/tachiyomi-en.mangafire-v1.6.32.jar"
         },
         "extensionLib": "1.6",
         "versionCode": "32",
@@ -225,13 +225,13 @@
         "name": "CorujaToon",
         "packageName": "eu.kanade.tachiyomi.extension.pt.corujatoon",
         "resources": {
-          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/a28a2f0/tachiyomi-pt.corujatoon-v1.6.3.apk",
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/9b120a8/tachiyomi-pt.corujatoon-v1.6.4.apk",
           "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/corujatoon/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/a28a2f0/tachiyomi-pt.corujatoon-v1.6.3.jar"
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/9b120a8/tachiyomi-pt.corujatoon-v1.6.4.jar"
         },
         "extensionLib": "1.6",
-        "versionCode": "3",
-        "versionName": "1.6.3",
+        "versionCode": "4",
+        "versionName": "1.6.4",
         "contentWarning": "CONTENT_WARNING_MIXED",
         "sources": [
           {
@@ -288,9 +288,9 @@
         "name": "KuroMangas",
         "packageName": "eu.kanade.tachiyomi.extension.pt.kuromangas",
         "resources": {
-          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/b0fde6e/tachiyomi-pt.kuromangas-v1.4.16.apk",
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/9b120a8/tachiyomi-pt.kuromangas-v1.4.16.apk",
           "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/kuromangas/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/b0fde6e/tachiyomi-pt.kuromangas-v1.4.16.jar"
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/9b120a8/tachiyomi-pt.kuromangas-v1.4.16.jar"
         },
         "extensionLib": "1.4",
         "versionCode": "16",
@@ -330,13 +330,13 @@
         "name": "MangaLivre.blog",
         "packageName": "eu.kanade.tachiyomi.extension.pt.mangalivreblog",
         "resources": {
-          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.mangalivreblog-v1.6.2.apk",
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/9b120a8/tachiyomi-pt.mangalivreblog-v1.6.3.apk",
           "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/mangalivreblog/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.mangalivreblog-v1.6.2.jar"
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/9b120a8/tachiyomi-pt.mangalivreblog-v1.6.3.jar"
         },
         "extensionLib": "1.6",
-        "versionCode": "2",
-        "versionName": "1.6.2",
+        "versionCode": "3",
+        "versionName": "1.6.3",
         "contentWarning": "CONTENT_WARNING_MIXED",
         "sources": [
           {
@@ -351,13 +351,13 @@
         "name": "Mangas Brasuka",
         "packageName": "eu.kanade.tachiyomi.extension.pt.mangasbrasuka",
         "resources": {
-          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/a28a2f0/tachiyomi-pt.mangasbrasuka-v1.6.58.apk",
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/9b120a8/tachiyomi-pt.mangasbrasuka-v1.6.59.apk",
           "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/mangasbrasuka/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/a28a2f0/tachiyomi-pt.mangasbrasuka-v1.6.58.jar"
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/9b120a8/tachiyomi-pt.mangasbrasuka-v1.6.59.jar"
         },
         "extensionLib": "1.6",
-        "versionCode": "58",
-        "versionName": "1.6.58",
+        "versionCode": "59",
+        "versionName": "1.6.59",
         "contentWarning": "CONTENT_WARNING_MIXED",
         "sources": [
           {
@@ -435,13 +435,13 @@
         "name": "OneReader",
         "packageName": "eu.kanade.tachiyomi.extension.pt.onereader",
         "resources": {
-          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/a28a2f0/tachiyomi-pt.onereader-v1.6.1.apk",
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/9b120a8/tachiyomi-pt.onereader-v1.6.2.apk",
           "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/onereader/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/a28a2f0/tachiyomi-pt.onereader-v1.6.1.jar"
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/9b120a8/tachiyomi-pt.onereader-v1.6.2.jar"
         },
         "extensionLib": "1.6",
-        "versionCode": "1",
-        "versionName": "1.6.1",
+        "versionCode": "2",
+        "versionName": "1.6.2",
         "contentWarning": "CONTENT_WARNING_MIXED",
         "sources": [
           {
