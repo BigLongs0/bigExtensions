@@ -106,10 +106,9 @@ abstract class OneReader : KeiSource() {
         val work = url.queryParameter("id") ?: throw IOException("Capítulo inválido")
         val number = url.queryParameter("cap") ?: throw IOException("Capítulo inválido")
 
-        return client.get(manifestUrl(work, number), manifestHeaders, ensureSuccess = false)
-            .parseManifest()
-            .chapter.pages
-            .mapIndexed { index, path -> Page(index, imageUrl = baseUrl + path) }
+        val manifest = client.get(manifestUrl(work, number), manifestHeaders, ensureSuccess = false).parseManifest()
+        rememberGrants(work, number, manifest)
+        return manifest.chapter.pages.mapIndexed { index, path -> Page(index, imageUrl = baseUrl + path) }
     }
 
     private fun manifestUrl(work: String, number: String) = "$baseUrl/api/reader/works".toHttpUrl().newBuilder()
@@ -117,6 +116,20 @@ abstract class OneReader : KeiSource() {
         .addPathSegment("chapters")
         .addPathSegment(number)
         .build()
+
+    // The latest page grants of the last few chapters. The site releases its own translations a few pages
+    // at a time, so every page after a release has to use the newest grant instead of the one in its Page.
+    private val chapterGrants = object : LinkedHashMap<String, ChapterGrants>(8, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, ChapterGrants>) = size > MAX_CACHED_CHAPTERS
+    }
+
+    private fun rememberGrants(work: String, number: String, manifest: ReaderManifestDto): ChapterGrants {
+        val grants = ChapterGrants(manifest.chapter.pages, manifest.proofServerKey)
+        synchronized(chapterGrants) { chapterGrants["$work/$number"] = grants }
+        return grants
+    }
+
+    private fun cachedGrants(work: String, number: String) = synchronized(chapterGrants) { chapterGrants["$work/$number"] }
 
     // The site always announces an ephemeral key; its own translations refuse to load without one.
     private val manifestHeaders by lazy {
@@ -141,31 +154,80 @@ abstract class OneReader : KeiSource() {
         val segments = request.url.pathSegments
         if (request.url.host != siteHost || segments.getOrNull(6) != "pages") return chain.proceed(request)
 
-        val mediaRequest = request.newBuilder().headers(mediaHeaders).build()
-        var response = pageClient.newCall(mediaRequest).execute()
-        // Page grants last two hours, so a cached page list needs a fresh chapter manifest.
-        if (response.code == 403) {
-            response.close()
-            val pageUrl = renewPageUrl(segments[3], segments[5], request.url.encodedPath)
-            response = pageClient.newCall(mediaRequest.newBuilder().url(pageUrl).build()).execute()
-        }
-        if (!response.isSuccessful) throw response.toApiError()
+        val work = segments[3]
+        val number = segments[5]
+        val pageNumber = segments[7].toInt()
+        var grants = cachedGrants(work, number)
+        var pageUrl = grants?.pageUrl(pageNumber) ?: request.url
+        val deadline = System.currentTimeMillis() + PAGE_RELEASE_TIMEOUT
 
-        val media = response.parseAs<MediaDto>()
-        return pageClient.newCall(GET(media.url, headers)).execute()
-            .decodeMedia(media, transport)
-            .newBuilder()
-            .request(request)
-            .build()
+        while (true) {
+            val pageHeaders = grants?.proofServerKey
+                ?.let { mediaHeaders.newBuilder().addAll(transport.proofHeaders(it, pageUrl)).build() }
+                ?: mediaHeaders
+            val mediaRequest = request.newBuilder().url(pageUrl).headers(pageHeaders).build()
+            val response = pageClient.newCall(mediaRequest).execute()
+
+            if (response.isSuccessful) {
+                val media = response.parseAs<MediaDto>()
+                return pageClient.newCall(GET(media.url, headers)).execute()
+                    .decodeMedia(media, transport)
+                    .newBuilder()
+                    .request(request)
+                    .build()
+            }
+
+            val status = response.code
+            val retryAfter = response.header("Retry-After")?.toLongOrNull()
+            val error = response.readApiError()
+            // Too many pages in a row: the site's reader waits and asks again for the same page.
+            if (status == 429 && retryAfter != null) {
+                waitForRelease(retryAfter, deadline)
+                continue
+            }
+            // Expired grants (they last two hours), missing proofs and pages past the released window
+            // all need a newer chapter manifest.
+            if (status != 403 && error?.code !in RENEWABLE_ERRORS) throw error.toIOException(status)
+            if (System.currentTimeMillis() > deadline) throw IOException(RELEASE_TIMEOUT_MESSAGE)
+            grants = renewGrants(work, number, pageNumber, pageUrl, deadline)
+            pageUrl = grants.pageUrl(pageNumber) ?: throw IOException("Página não encontrada, reabra o capítulo.")
+        }
     }
 
-    private fun renewPageUrl(work: String, number: String, pagePath: String): String {
-        val pages = client.newCall(GET(manifestUrl(work, number), manifestHeaders)).execute()
-            .parseManifest()
-            .chapter.pages
-        val path = pages.firstOrNull { it.substringBefore('?') == pagePath }
-            ?: throw IOException("Página não encontrada, reabra o capítulo.")
-        return baseUrl + path
+    private fun ChapterGrants.pageUrl(pageNumber: Int) = pages.getOrNull(pageNumber - 1)?.let { (baseUrl + it).toHttpUrl() }
+
+    // A page past the released window is only unlocked after the pages before it, so reaching it can take a while.
+    private fun renewGrants(work: String, number: String, pageNumber: Int, failedUrl: HttpUrl, deadline: Long): ChapterGrants {
+        synchronized(renewLock) {
+            // Pages of the same chapter fail together, so another thread may have renewed the grants already.
+            cachedGrants(work, number)?.takeIf { it.pageUrl(pageNumber) != failedUrl }?.let { return it }
+
+            val url = manifestUrl(work, number).newBuilder()
+                .apply { failedUrl.queryParameter("g")?.let { addQueryParameter("_or_pg", it) } }
+                .addQueryParameter("_or_page", pageNumber.toString())
+                .build()
+
+            while (true) {
+                val response = client.newCall(GET(url, manifestHeaders)).execute()
+                if (response.isSuccessful) return rememberGrants(work, number, response.parseAs())
+
+                val status = response.code
+                val retryAfter = response.header("Retry-After")?.toLongOrNull()
+                val error = response.readApiError()
+                if (status != 429 || retryAfter == null) throw error.toIOException(status)
+                waitForRelease(retryAfter, deadline)
+            }
+        }
+    }
+
+    private val renewLock = Any()
+
+    // The site paces how fast pages are released and says how long to wait. This runs inside an interceptor,
+    // so there is no coroutine to suspend.
+    private fun waitForRelease(retryAfterSeconds: Long, deadline: Long) {
+        val wait = (retryAfterSeconds * 1000).coerceIn(MIN_RELEASE_WAIT, MAX_RELEASE_WAIT)
+        if (System.currentTimeMillis() + wait > deadline) throw IOException(RELEASE_TIMEOUT_MESSAGE)
+        Thread.sleep(wait)
     }
 
     private fun Response.parseManifest(): ReaderManifestDto {
@@ -195,8 +257,16 @@ abstract class OneReader : KeiSource() {
 
     override fun getMangaUrl(manga: SManga): String = "$baseUrl/obra?id=${manga.url}"
 
+    private class ChapterGrants(val pages: List<String>, val proofServerKey: String?)
+
     companion object {
         private const val PAGE_SIZE = 24
+        private const val MAX_CACHED_CHAPTERS = 4
+        private const val PAGE_RELEASE_TIMEOUT = 60_000L
+        private const val RELEASE_TIMEOUT_MESSAGE = "A OneReader ainda não liberou esta página, tente de novo em instantes."
+        private const val MIN_RELEASE_WAIT = 750L
+        private const val MAX_RELEASE_WAIT = 10_000L
+        private val RENEWABLE_ERRORS = setOf("READER_GRANT_INVALID", "READER_PROOF_EXPIRED", "READER_PAGE_WINDOW_ADVANCE")
         private val MANGA_PATHS = listOf("obra", "leitor")
         private const val MEDIA_ACCEPT = "application/vnd.onereader.media+json"
         private const val CLIENT_KEY_HEADER = "X-OneReader-Client-Key"

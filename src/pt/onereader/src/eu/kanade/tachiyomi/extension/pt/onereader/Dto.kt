@@ -143,11 +143,26 @@ class ChapterDto(
 @Serializable
 class ReaderManifestDto(
     val chapter: ReaderChapterDto,
-)
+    private val protection: ProtectionDto? = null,
+) {
+    // Only the site's own translations ask for a signed proof on each page request.
+    val proofServerKey get() = protection?.transport?.takeIf { it.requestProof == PROOF_MODE }?.serverKey
+}
 
 @Serializable
 class ReaderChapterDto(
     val pages: List<String>,
+)
+
+@Serializable
+class ProtectionDto(
+    val transport: TransportDto? = null,
+)
+
+@Serializable
+class TransportDto(
+    val serverKey: String,
+    val requestProof: String? = null,
 )
 
 @Serializable
