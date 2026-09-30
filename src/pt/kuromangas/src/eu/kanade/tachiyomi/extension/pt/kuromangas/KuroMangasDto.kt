@@ -6,7 +6,7 @@ import keiyoushi.utils.tryParse
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
-import java.text.SimpleDateFormat
+import kotlin.time.Instant
 
 /**
  * Builds the thumbnail URL, removing /uploads/ prefix if present.
@@ -24,7 +24,7 @@ class SecureDto(
 )
 
 @Serializable
-data class MangaListResponse(
+class MangaListResponse(
     val data: List<MangaDto>,
     val pagination: PaginationDto,
 )
@@ -40,7 +40,7 @@ class PaginationDto(
 }
 
 @Serializable
-data class MangaDto(
+class MangaDto(
     val id: Int,
     val title: String,
     val description: String? = null,
@@ -76,7 +76,7 @@ data class MangaDto(
 }
 
 @Serializable
-data class MangaDetailsResponse(
+class MangaDetailsResponse(
     val manga: MangaDto,
 )
 
@@ -86,13 +86,13 @@ class ChapterListResponse(
 )
 
 @Serializable
-data class ChapterDto(
+class ChapterDto(
     val id: Int,
     val title: String? = null,
     @SerialName("chapter_number") val chapterNumber: String? = null,
     @SerialName("upload_date") val uploadDate: String? = null,
 ) {
-    fun toSChapter(mangaId: Int, dateFormat: SimpleDateFormat) = SChapter.create().apply {
+    fun toSChapter(mangaId: Int) = SChapter.create().apply {
         url = "/chapter/$mangaId/$id"
         name = buildString {
             chapterNumber?.toFloatOrNull()?.let { append("Capítulo ${it.toString().removeSuffix(".0")}") }
@@ -102,18 +102,18 @@ data class ChapterDto(
             }
         }.ifBlank { "Capítulo ${this@ChapterDto.id}" }
         chapter_number = this@ChapterDto.chapterNumber?.toFloatOrNull() ?: 0f
-        date_upload = uploadDate?.let { dateFormat.tryParse(it) } ?: 0L
+        date_upload = Instant.tryParse(uploadDate)
     }
 }
 
 @Serializable
-data class LatestResponse(
+class LatestResponse(
     val data: List<LatestMangaDto>,
     val pagination: PaginationDto,
 )
 
 @Serializable
-data class LatestMangaDto(
+class LatestMangaDto(
     @SerialName("manga_id") val mangaId: Int,
     @SerialName("manga_title") val mangaTitle: String,
     @SerialName("manga_cover") val mangaCover: String? = null,
@@ -128,7 +128,14 @@ data class LatestMangaDto(
 }
 
 @Serializable
-data class ChapterPagesResponse(
+class ChapterPagesResponse(
     val id: Int,
     val pages: List<String>,
+)
+
+@Serializable
+class LoginDto(
+    val email: String,
+    val password: String,
+    val rememberMe: Boolean,
 )

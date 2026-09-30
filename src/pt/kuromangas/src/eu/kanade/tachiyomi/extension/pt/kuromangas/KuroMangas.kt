@@ -13,21 +13,16 @@ import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.online.HttpSource
 import keiyoushi.annotation.Source
 import keiyoushi.network.rateLimit
+import keiyoushi.utils.firstInstanceOrNull
 import keiyoushi.utils.getPreferencesLazy
 import keiyoushi.utils.parseAs
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
+import keiyoushi.utils.toJsonRequestBody
 import okhttp3.Headers
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.Locale
-import java.util.TimeZone
 
 @Source
 abstract class KuroMangas :
@@ -71,12 +66,6 @@ abstract class KuroMangas :
         .add("Sec-Fetch-Dest", "empty")
         .add("Sec-Fetch-Mode", "cors")
         .add("Sec-Fetch-Site", "same-origin")
-
-    private val dateFormat by lazy {
-        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ROOT).apply {
-            timeZone = TimeZone.getTimeZone("UTC")
-        }
-    }
 
     // ============================= Popular ================================
 
@@ -124,7 +113,7 @@ abstract class KuroMangas :
             url.addQueryParameter("search", query)
         }
 
-        filters.filterIsInstance<SortFilter>().firstOrNull()?.let { filter ->
+        filters.firstInstanceOrNull<SortFilter>()?.let { filter ->
             url.addQueryParameter("sort", filter.selectedSort)
             url.addQueryParameter("order", filter.selectedOrder)
         } ?: run {
@@ -167,7 +156,7 @@ abstract class KuroMangas :
     override fun chapterListParse(response: Response): List<SChapter> {
         val mangaId = response.request.url.pathSegments.let { it[it.lastIndex - 1] }.toInt()
         return response.parseAs<ChapterListResponse>().chapters
-            .map { it.toSChapter(mangaId, dateFormat) }
+            .map { it.toSChapter(mangaId) }
             .sortedByDescending { it.chapter_number }
     }
 
@@ -235,13 +224,8 @@ abstract class KuroMangas :
 
     // Implicit set-cookie: kuro_session and _kn
     private fun login(email: String, password: String) {
-        val payload = buildJsonObject {
-            put("email", email)
-            put("password", password)
-            // Without it both cookies come back for the session only, forcing a login per app start.
-            put("rememberMe", true)
-        }.toString()
-        val requestBody = payload.toRequestBody(JSON_MEDIA_TYPE)
+        // Without rememberMe both cookies come back for the session only, forcing a login per app start.
+        val requestBody = LoginDto(email, password, rememberMe = true).toJsonRequestBody()
         val request = POST("$apiUrl/auth/login", headers, requestBody)
         network.client.newCall(request).execute().close()
     }
@@ -283,7 +267,6 @@ abstract class KuroMangas :
         private const val PREF_PASSWORD = "kuromangas_password"
         private const val SESSION_COOKIE = "kuro_session"
         private const val LOGIN_REQUIRED_MESSAGE = "Faça login no WebView ou insira email e senha nas configurações e tente novamente."
-        private val JSON_MEDIA_TYPE = "application/json".toMediaType()
     }
 }
 

@@ -2,11 +2,11 @@ package eu.kanade.tachiyomi.extension.en.kagane
 
 import eu.kanade.tachiyomi.source.model.SChapter
 import eu.kanade.tachiyomi.source.model.SManga
-import keiyoushi.utils.tryParse
+import keiyoushi.utils.tryParseDateTime
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.jsoup.Jsoup
-import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @Serializable
@@ -29,7 +29,7 @@ class SourcesDto(
 )
 
 @Serializable
-data class SourceDto(
+class SourceDto(
     @SerialName("source_id") val sourceId: String,
     @SerialName("source_type") val sourceType: String, // "Official", "Unofficial", "Mixed"
     val title: String,
@@ -195,7 +195,7 @@ class DetailsDto(
         }
             .map { it.name }
             .distinct()
-            .joinToString(", ")
+            .joinToString()
 
         artist = artists
         author = authors.joinToString()
@@ -243,12 +243,12 @@ class ChapterDto(
         fun toSChapter(actualSeriesId: String, useSourceChapterNumber: Boolean = false, chapterTitleMode: String = "optional"): SChapter = SChapter.create().apply {
             url = "/series/$actualSeriesId/reader/$id"
             name = buildChapterName(chapterTitleMode)
-            date_upload = dateFormat.tryParse(createdAt)
+            date_upload = dateFormat.tryParseDateTime(createdAt?.take(19))
             if (useSourceChapterNumber) {
                 chapter_number = number
             }
             scanlator = buildString {
-                append(groups.joinToString(", ") { it.title })
+                append(groups.joinToString { it.title })
 
                 // Extract group tags in chapter title
                 CHAPTER_GROUP_REGEX.matchEntire(METADATA_REGEX.replace(title.trim(), ""))?.let { match ->
@@ -298,7 +298,7 @@ class ChapterDto(
         val title: String,
     )
     companion object {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH)
+        val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH)
     }
 }
 

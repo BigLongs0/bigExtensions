@@ -26,7 +26,7 @@ class ChallengeSolverInterceptor(
     private fun clearance(url: HttpUrl) = cookieJar.loadForRequest(url).find { it.name == "waf_pass" }?.value
 
     @Serializable
-    private data class ErrorResponse(
+    private class ErrorResponse(
         val error: String?,
     )
 
