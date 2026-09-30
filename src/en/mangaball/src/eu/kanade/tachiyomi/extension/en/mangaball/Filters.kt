@@ -2,139 +2,131 @@ package eu.kanade.tachiyomi.extension.en.mangaball
 
 import eu.kanade.tachiyomi.source.model.Filter
 import eu.kanade.tachiyomi.source.model.FilterList
-import okhttp3.FormBody
+import okhttp3.HttpUrl
 
-internal interface FormFilter {
-    fun addToForm(builder: FormBody.Builder)
+internal interface UrlFilter {
+    fun addToUrl(builder: HttpUrl.Builder)
 }
 
 internal class MangaBallFilters(private val taxonomy: TaxonomyDto?) {
     fun getFilterList() = FilterList(
         SortFilter(),
         Filter.Separator(),
-        IncludedTagsModeFilter(),
-        ExcludedTagsModeFilter(),
+        TagModeFilter(),
         TagFilter("Content", taxonomy?.content.orEmpty()),
         TagFilter("Format", taxonomy?.format.orEmpty()),
         TagFilter("Genres", taxonomy?.genre.orEmpty()),
-        TagFilter("Origin", taxonomy?.origin.orEmpty()),
         TagFilter("Themes", taxonomy?.theme.orEmpty()),
         Filter.Separator(),
         DemographicFilter(),
-        OriginalLanguageFilter(),
+        TypeFilter(),
         StatusFilter(),
+        AdultFilter(),
     )
 }
 
 private class FilterOption(val name: String, val value: String)
 
-private open class FormSelectFilter(
+private open class UrlSelectFilter(
     name: String,
     private val parameter: String,
     private val options: List<FilterOption>,
-    defaultValue: Int = 0,
-) : Filter.Select<String>(name, options.map(FilterOption::name).toTypedArray(), defaultValue),
-    FormFilter {
-    override fun addToForm(builder: FormBody.Builder) {
-        builder.add(parameter, options[state].value)
+) : Filter.Select<String>(name, options.map(FilterOption::name).toTypedArray()),
+    UrlFilter {
+    override fun addToUrl(builder: HttpUrl.Builder) {
+        options[state].value.takeIf(String::isNotEmpty)?.let { builder.addQueryParameter(parameter, it) }
     }
 }
 
-private class IncludedTagsModeFilter :
-    FormSelectFilter(
+private class TagModeFilter :
+    UrlSelectFilter(
         "Included tags match",
-        "filters[tag_included_mode]",
-        TAG_MATCH_OPTIONS,
+        "tag_mode",
+        listOf(
+            FilterOption("All", "AND"),
+            FilterOption("Any", "OR"),
+        ),
     )
 
-private class ExcludedTagsModeFilter :
-    FormSelectFilter(
-        "Excluded tags match",
-        "filters[tag_excluded_mode]",
-        TAG_MATCH_OPTIONS,
-    )
+internal class TagOption(name: String, val id: String) : Filter.TriState(name)
 
-private class TagOption(name: String, val id: String) : Filter.TriState(name)
-
-private class TagFilter(name: String, tags: List<TaxonomyItemDto>) :
-    Filter.Group<TagOption>(name, tags.map { TagOption(it.name, it.id) }),
-    FormFilter {
-    override fun addToForm(builder: FormBody.Builder) {
-        for (tag in state) {
-            when (tag.state) {
-                Filter.TriState.STATE_INCLUDE -> builder.add("filters[tag_included_ids][]", tag.id)
-                Filter.TriState.STATE_EXCLUDE -> builder.add("filters[tag_excluded_ids][]", tag.id)
-            }
-        }
-    }
+internal class TagFilter(name: String, tags: List<TaxonomyItemDto>) : Filter.Group<TagOption>(name, tags.map { TagOption(it.name, it.id) }) {
+    val included get() = state.filter { it.state == Filter.TriState.STATE_INCLUDE }.map(TagOption::id)
+    val excluded get() = state.filter { it.state == Filter.TriState.STATE_EXCLUDE }.map(TagOption::id)
 }
 
 private class DemographicFilter :
-    FormSelectFilter(
-        "Magazine demographic",
-        "filters[demographic]",
+    UrlSelectFilter(
+        "Demographic",
+        "publicationDemographic",
         listOf(
-            FilterOption("Any", "any"),
+            FilterOption("Any", ""),
             FilterOption("Shounen", "shounen"),
             FilterOption("Shoujo", "shoujo"),
             FilterOption("Seinen", "seinen"),
             FilterOption("Josei", "josei"),
-            FilterOption("Yuri", "yuri"),
-            FilterOption("Yaoi", "yaoi"),
         ),
     )
 
-private class OriginalLanguageFilter :
-    FormSelectFilter(
-        "Original language",
-        "filters[originalLanguages]",
+private class TypeFilter :
+    UrlSelectFilter(
+        "Type",
+        "type",
         listOf(
-            FilterOption("Any", "any"),
-            FilterOption("Comics", "en"),
-            FilterOption("Manga", "jp"),
-            FilterOption("Manhwa", "kr"),
-            FilterOption("Manhua", "zh"),
+            FilterOption("Any", ""),
+            FilterOption("Manga", "manga"),
+            FilterOption("Manhwa", "manhwa"),
+            FilterOption("Manhua", "manhua"),
+            FilterOption("Comics", "comics"),
         ),
     )
 
 private class StatusFilter :
-    FormSelectFilter(
+    UrlSelectFilter(
         "Publication status",
-        "filters[publicationStatus]",
+        "status",
         listOf(
-            FilterOption("Any", "any"),
+            FilterOption("Any", ""),
             FilterOption("Ongoing", "ongoing"),
             FilterOption("Completed", "completed"),
-            FilterOption("On-Hold", "on_hold"),
-            FilterOption("Cancelled", "cancelled"),
             FilterOption("Hiatus", "hiatus"),
         ),
     )
 
-private class SortFilter :
+private class AdultFilter :
+    UrlSelectFilter(
+        "Adult content",
+        "adult_mode",
+        listOf(
+            FilterOption("Show", "all"),
+            FilterOption("Hide", "no_18"),
+            FilterOption("Only", "only_18"),
+        ),
+    )
+
+internal class SortFilter(selection: Selection = Selection(0, false)) :
     Filter.Sort(
         "Sort by",
         SORT_OPTIONS.map(FilterOption::name).toTypedArray(),
-        Selection(0, false),
+        selection,
     ),
-    FormFilter {
-    override fun addToForm(builder: FormBody.Builder) {
+    UrlFilter {
+    override fun addToUrl(builder: HttpUrl.Builder) {
         val selection = state ?: Selection(0, false)
-        val direction = if (selection.ascending) "asc" else "desc"
-        builder.add("filters[sort]", "${SORT_OPTIONS[selection.index].value}_$direction")
+        builder.setQueryParameter("sort_by", SORT_OPTIONS[selection.index].value)
+        builder.setQueryParameter("sort_order", if (selection.ascending) "asc" else "desc")
+    }
+
+    companion object {
+        fun popular() = SortFilter(Selection(SORT_OPTIONS.indexOfFirst { it.value == "views" }, false))
+        fun latest() = SortFilter(Selection(SORT_OPTIONS.indexOfFirst { it.value == "lastupdate" }, false))
     }
 }
 
-private val TAG_MATCH_OPTIONS = listOf(
-    FilterOption("AND", "and"),
-    FilterOption("OR", "or"),
-)
-
 private val SORT_OPTIONS = listOf(
-    FilterOption("Updated chapters", "updated_chapters"),
-    FilterOption("Created", "created_at"),
-    FilterOption("Updated", "updated_at"),
-    FilterOption("Title", "name"),
     FilterOption("Views", "views"),
+    FilterOption("Latest updated", "lastupdate"),
     FilterOption("Rating", "rating"),
+    FilterOption("Recently added", "created_at"),
+    FilterOption("Title", "name"),
 )

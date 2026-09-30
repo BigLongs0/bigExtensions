@@ -3,145 +3,158 @@ package eu.kanade.tachiyomi.extension.en.mangaball
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.SChapter
 import eu.kanade.tachiyomi.source.model.SManga
+import keiyoushi.utils.tryParseDateTime
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.jsonPrimitive
-import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import org.jsoup.Jsoup
-import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.Locale
-import kotlin.time.Instant
 
 @Serializable
 class MangaListResponseDto(
-    private val data: List<MangaListItemDto>,
+    private val data: List<MangaDto>,
     private val pagination: PaginationDto,
 ) {
-    fun toMangasPage(baseUrl: String) = MangasPage(
-        mangas = data.map { it.toSManga(baseUrl) },
-        hasNextPage = pagination.currentPage < pagination.lastPage && data.isNotEmpty(),
+    fun toMangasPage() = MangasPage(
+        mangas = data.mapNotNull(MangaDto::toSMangaOrNull),
+        hasNextPage = pagination.page < pagination.totalPages,
     )
 }
 
 @Serializable
 class PaginationDto(
-    @SerialName("current_page") val currentPage: Int,
-    @SerialName("last_page") val lastPage: Int,
+    val page: Int,
+    @SerialName("total_pages") val totalPages: Int,
 )
 
 @Serializable
-class MangaListItemDto(
-    @SerialName("_id") private val id: String,
-    private val name: String,
-    private val cover: String,
-    private val url: String,
-    private val status: String? = null,
-    private val tags: String? = null,
-    private val authors: String? = null,
-    private val isAdult: Boolean = false,
-) {
-    fun toSManga(baseUrl: String) = SManga.create().apply {
-        val webUrl = this@MangaListItemDto.url.toHttpUrl()
-        val webSegment = webUrl.pathSegments.getOrNull(1)
-            ?: error("Manga URL is missing its slug")
-        val slug = webSegment.removeSuffix("-$id").takeIf(String::isNotEmpty)
-            ?: error("Manga URL is missing its slug")
+class MangaDetailsResponseDto(
+    val data: MangaDto,
+)
 
-        url = MangaKey(slug, id).serialized
-        title = name
-        thumbnail_url = cover.toAbsoluteHttpsUrl(baseUrl)
-        author = authors.toFragmentTexts(baseUrl, "[data-person-id]").joinToString().takeIf(String::isNotEmpty)
-        status = this@MangaListItemDto.status.toMangaStatus(baseUrl)
+@Serializable
+class MangaDto(
+    private val id: String,
+    private val name: String? = null,
+    private val slug: String? = null,
+    private val image: ImageDto? = null,
+    private val alternateName: List<String> = emptyList(),
+    private val description: List<String> = emptyList(),
+    private val status: String? = null,
+    private val authors: List<NamedDto> = emptyList(),
+    private val tags: List<NamedDto> = emptyList(),
+    private val is18plus: Boolean = false,
+) {
+    // A few catalog entries have no name at all; they cannot be listed.
+    fun toSMangaOrNull() = name?.let { toSManga() }
+
+    fun toSManga() = SManga.create().apply {
+        url = MangaKey(slug?.takeIf(String::isNotEmpty) ?: id, id).serialized
+        title = name ?: throw Exception("Manga title not found")
+        thumbnail_url = image?.toUrl()
+        author = authors.map { it.name }.distinct().joinToString().takeIf(String::isNotEmpty)
         genre = buildList {
-            addAll(tags.toFragmentTexts(baseUrl, "[data-tag-id]"))
-            if (isAdult) add("Adult")
+            tags.mapTo(this) { it.name }
+            if (is18plus) add("Adult")
         }.distinct().joinToString().takeIf(String::isNotEmpty)
+        status = this@MangaDto.status.toMangaStatus()
+        description = buildString {
+            append(this@MangaDto.description.joinToString("\n\n"))
+            val alternatives = alternateName
+                .filterNot { it.equals(name, ignoreCase = true) }
+                .distinctBy(String::lowercase)
+            if (alternatives.isNotEmpty()) {
+                if (isNotEmpty()) append("\n\n")
+                append("Alternative titles:\n")
+                append(alternatives.joinToString("\n"))
+            }
+        }.takeIf(String::isNotEmpty)
     }
 }
+
+@Serializable
+class ImageDto(
+    private val cover: CoverDto? = null,
+    @SerialName("cdn_mangadex") private val mangadex: String? = null,
+    @SerialName("cdn_mangaupdate") private val mangaupdates: String? = null,
+) {
+    fun toUrl(): String? = cover?.path?.takeIf(String::isNotEmpty)?.let { COVER_CDN + it }
+        ?: mangadex?.takeIf(String::isNotEmpty)
+        ?: mangaupdates?.takeIf(String::isNotEmpty)
+}
+
+@Serializable
+class CoverDto(
+    val path: String? = null,
+)
+
+@Serializable
+class NamedDto(
+    val name: String,
+)
+
+@Serializable
+class ChapterListResponseDto(
+    private val data: List<ChapterDto>,
+) {
+    fun toSChapterList() = data.map(ChapterDto::toSChapter)
+}
+
+@Serializable
+class ChapterDto(
+    private val id: String,
+    private val name: String? = null,
+    private val number: Double? = null,
+    private val volume: Double? = null,
+    @SerialName("group_name") private val groupName: String? = null,
+    @SerialName("created_at") private val createdAt: String? = null,
+) {
+    fun toSChapter() = SChapter.create().apply {
+        url = id
+        chapter_number = number?.toFloat() ?: -1f
+        scanlator = groupName?.takeIf(String::isNotEmpty)
+        date_upload = DATE_FORMAT.tryParseDateTime(createdAt, ZoneOffset.UTC)
+
+        val label = this@ChapterDto.name?.takeIf(String::isNotBlank)
+            ?: number?.let { "Chapter ${it.toString().removeSuffix(".0")}" }
+            ?: "Chapter"
+        val volumeNumber = volume?.takeIf { it > 0 }?.toString()?.removeSuffix(".0")
+        name = if (volumeNumber != null && !label.contains("Vol.", ignoreCase = true)) {
+            "Vol. $volumeNumber $label"
+        } else {
+            label
+        }
+    }
+}
+
+@Serializable
+class ChapterListRequestDto(
+    @SerialName("title_id") val titleId: String,
+    val lang: String,
+)
+
+@Serializable
+class ChapterPagesDto(
+    @SerialName("title_id") val titleId: String,
+    val pages: List<String> = emptyList(),
+)
 
 @Serializable
 class TaxonomyResponseDto(
     val data: TaxonomyDto,
 )
 
+// Items keep the `_id` key so filter data cached by the previous site version still parses.
 @Serializable
 class TaxonomyDto(
-    val content: List<TaxonomyItemDto>,
-    val format: List<TaxonomyItemDto>,
-    val genre: List<TaxonomyItemDto>,
-    val origin: List<TaxonomyItemDto>,
-    val theme: List<TaxonomyItemDto>,
+    val content: List<TaxonomyItemDto> = emptyList(),
+    val format: List<TaxonomyItemDto> = emptyList(),
+    val genre: List<TaxonomyItemDto> = emptyList(),
+    val theme: List<TaxonomyItemDto> = emptyList(),
 )
 
 @Serializable
 class TaxonomyItemDto(
     @SerialName("_id") val id: String,
-    val name: String,
-)
-
-@Serializable
-class ChapterListResponseDto(
-    @SerialName("ALL_CHAPTERS") private val allChapters: List<ChapterDto>,
-) {
-    fun toSChapterList(): List<SChapter> = allChapters
-        .sortedByDescending(ChapterDto::number)
-        .flatMap { chapter ->
-            chapter.translations
-                .filter { it.language == "en" }
-                .sortedWith(
-                    compareByDescending<ChapterTranslationDto>(ChapterTranslationDto::sortDate)
-                        .thenByDescending(ChapterTranslationDto::sortId),
-                )
-                .map { it.toSChapter(chapter.number) }
-        }
-}
-
-@Serializable
-class ChapterDto(
-    @SerialName("number_float") val number: Double,
-    val translations: List<ChapterTranslationDto>,
-)
-
-@Serializable
-class ChapterTranslationDto(
-    private val id: String,
-    private val name: String,
-    val language: String,
-    private val group: ChapterGroupDto? = null,
-    private val date: String? = null,
-    private val volume: JsonElement? = null,
-) {
-    fun toSChapter(number: Double) = SChapter.create().apply {
-        url = id
-        name = displayName
-        chapter_number = number.toFloat()
-        scanlator = group?.name
-        date_upload = sortDate
-    }
-
-    private val displayName: String
-        get() {
-            val volumeNumber = volume?.jsonPrimitive?.contentOrNull?.takeUnless { it.isEmpty() || it == "0" }
-            return if (volumeNumber != null && !name.contains("Vol.", ignoreCase = true)) {
-                "Vol. $volumeNumber $name"
-            } else {
-                name
-            }
-        }
-
-    val sortDate: Long
-        get() = date.toEpochMillis()
-    val sortId: String
-        get() = id
-}
-
-@Serializable
-class ChapterGroupDto(
     val name: String,
 )
 
@@ -158,44 +171,14 @@ internal fun String.toMangaKey(): MangaKey {
     return MangaKey(substring(0, separator), substring(separator + 1))
 }
 
-internal fun String.toAbsoluteHttpsUrl(baseUrl: String): String {
-    val url = toHttpUrlOrNull() ?: baseUrl.toHttpUrl().resolve(this)
-        ?: error("Invalid URL: $this")
-    return url.newBuilder().scheme("https").build().toString()
+private fun String?.toMangaStatus(): Int = when (this?.lowercase()) {
+    "ongoing" -> SManga.ONGOING
+    "completed" -> SManga.COMPLETED
+    "hiatus", "on_hold", "on-hold" -> SManga.ON_HIATUS
+    "cancelled" -> SManga.CANCELLED
+    else -> SManga.UNKNOWN
 }
 
-internal fun String?.toMangaStatus(baseUrl: String): Int {
-    val normalized = this
-        ?.let { Jsoup.parseBodyFragment(it, baseUrl).text() }
-        ?.lowercase()
-        .orEmpty()
+private const val COVER_CDN = "https://bulbasaur.poke-black-and-white.net/covers/"
 
-    return when {
-        "ongoing" in normalized -> SManga.ONGOING
-        "completed" in normalized -> SManga.COMPLETED
-        "hiatus" in normalized || "on-hold" in normalized || "on hold" in normalized -> SManga.ON_HIATUS
-        "cancelled" in normalized -> SManga.CANCELLED
-        else -> SManga.UNKNOWN
-    }
-}
-
-private fun String?.toFragmentTexts(baseUrl: String, selector: String): List<String> = this
-    ?.let { Jsoup.parseBodyFragment(it, baseUrl) }
-    ?.select(selector)
-    ?.map { it.text() }
-    ?.filter(String::isNotEmpty)
-    ?.distinct()
-    .orEmpty()
-
-private fun String?.toEpochMillis(): Long {
-    val value = this ?: return 0L
-    Instant.parseOrNull(value.replace(' ', 'T'))?.let { return it.toEpochMilliseconds() }
-
-    return runCatching {
-        LocalDateTime.parse(value, DATE_FORMAT)
-            .toInstant(ZoneOffset.UTC)
-            .toEpochMilli()
-    }.getOrDefault(0L)
-}
-
-private val DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
+private val DATE_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE_TIME
