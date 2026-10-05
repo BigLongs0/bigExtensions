@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tomato · login</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+         background: #151515; color: #eee; font: 16px/1.5 system-ui, sans-serif; }
+  main { max-width: 420px; padding: 24px 16px; text-align: center; }
+  h1 { font-size: 1.3rem; margin: 0 0 12px; }
+  p { margin: 0 0 16px; color: #bbb; }
+  .h-captcha { display: inline-block; margin: 8px 0 16px; }
+  #done { display: none; color: #7ddc8a; font-weight: 600; }
+</style>
+<script src="https://js.hcaptcha.com/1/api.js?hl=pt" async defer></script>
+</head>
+<body>
+<main>
+  <h1>Entrar na Tomato</h1>
+  <p>Coloque seu email e sua senha nas configurações da extensão Tomato. Depois resolva o captcha abaixo e volte ao app.</p>
+  <div class="h-captcha" data-sitekey="d0706611-1d89-4b8c-af79-3caf0f14feba" data-theme="dark"
+       data-callback="solved" data-expired-callback="expired"></div>
+  <p id="done">Pronto! Volte e toque em “Tentar de novo” nos próximos 2 minutos.</p>
+</main>
+<script>
+  function solved(token) {
+    document.cookie = "tomato_captcha=" + token + "; path=/; max-age=110; Secure; SameSite=Lax";
+    document.getElementById("done").style.display = "block";
+  }
+  function expired() {
+    document.cookie = "tomato_captcha=; path=/; max-age=0; Secure; SameSite=Lax";
+    document.getElementById("done").style.display = "none";
+  }
+</script>
+</body>
+</html>
