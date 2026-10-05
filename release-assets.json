@@ -151,22 +151,22 @@
   },
   "eu.kanade.tachiyomi.extension.pt.lycantoons": {
     "apk": {
-      "name": "tachiyomi-pt.lycantoons-v1.6.1.apk",
-      "sha256": "7efd0df1d6b88414e91f25db4b17d01071d31e4e0fb763d1aa227b40111e2b13"
+      "name": "tachiyomi-pt.lycantoons-v1.6.2.apk",
+      "sha256": "fcdd540ba47563eafce351d0232ac566ba2c061c8ac2841e03f87a0bab2a7e60"
     },
     "jar": {
-      "name": "tachiyomi-pt.lycantoons-v1.6.1.jar",
-      "sha256": "530ccbc6bb1cca96a7bee548d68965de98c2a8a637f663788eb2732157a80c92"
+      "name": "tachiyomi-pt.lycantoons-v1.6.2.jar",
+      "sha256": "ed9e55310f903a58da9614b5056190ae5684aa8663d77604b9e67a6fa03902d6"
     }
   },
   "eu.kanade.tachiyomi.extension.pt.mangadash": {
     "apk": {
-      "name": "tachiyomi-pt.mangadash-v1.6.1.apk",
-      "sha256": "56660a57700230794d2dc6fb971d80d479a3a76ee309a008c00bf55268753ead"
+      "name": "tachiyomi-pt.mangadash-v1.6.2.apk",
+      "sha256": "c1869731f4ff4208ea8ca46d65f810ab94532b6485f1b1534d37754c9084cd22"
     },
     "jar": {
-      "name": "tachiyomi-pt.mangadash-v1.6.1.jar",
-      "sha256": "b6c5e9380c0d4db4a876cd7b1c5132cb779fe29cea23e01e2430d1bba37c5a77"
+      "name": "tachiyomi-pt.mangadash-v1.6.2.jar",
+      "sha256": "e7584454b952aba44ccff003cdae9819824ffa06b1a3569782a7d4d3dbd38260"
     }
   },
   "eu.kanade.tachiyomi.extension.pt.mangalivreblog": {
@@ -211,12 +211,12 @@
   },
   "eu.kanade.tachiyomi.extension.pt.nexusmangas": {
     "apk": {
-      "name": "tachiyomi-pt.nexusmangas-v1.6.4.apk",
-      "sha256": "a3ec98a0c678a1e175c3d54612545f47d9f9510a94dcf66efc513ebb1c7c4262"
+      "name": "tachiyomi-pt.nexusmangas-v1.6.5.apk",
+      "sha256": "ed6cd7049573d9a3d79eb640ad3475136edd4313dacd5249acd3a566c0e61b3e"
     },
     "jar": {
-      "name": "tachiyomi-pt.nexusmangas-v1.6.4.jar",
-      "sha256": "6e112617bca026c0492c0cb8485882f86b43f3f11cdafe1135e14c6e71f0347c"
+      "name": "tachiyomi-pt.nexusmangas-v1.6.5.jar",
+      "sha256": "a10f66e428f3a771d3eed912d9922c8bac1073c8b2b7884e22a56b137a2f8e5d"
     }
   },
   "eu.kanade.tachiyomi.extension.pt.onereader": {
@@ -251,12 +251,12 @@
   },
   "eu.kanade.tachiyomi.extension.pt.tomato": {
     "apk": {
-      "name": "tachiyomi-pt.tomato-v1.6.1.apk",
-      "sha256": "5612f1b2046c48546c39194835e1f50e9e7fbcd26f5f9f2a7a6aeb5ed6bc2ab3"
+      "name": "tachiyomi-pt.tomato-v1.6.2.apk",
+      "sha256": "3405aaaaa491ff65bec462753da0a3602170d2c2474bcaddae55f46119771fe3"
     },
     "jar": {
-      "name": "tachiyomi-pt.tomato-v1.6.1.jar",
-      "sha256": "f50ddf0abb2a307020bea71ef103b50a06d767c30747a9d2502c6cc14e27da48"
+      "name": "tachiyomi-pt.tomato-v1.6.2.jar",
+      "sha256": "7f7fcb678324aba250ac44ab712e74d1698ab4f7a323fb4000b36fd3f1007dbe"
     }
   },
   "eu.kanade.tachiyomi.extension.pt.vegitoons": {
