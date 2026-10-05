@@ -21,13 +21,12 @@ class PaginationDto(
 @Serializable
 class MangaDto(
     private val id: Int,
-    private val slug: String,
     private val nome: String,
     private val capa: String? = null,
 ) {
     // Relative covers are resolved against the site's cover folder, as its own scripts do.
     fun toSManga(coverBaseUrl: HttpUrl) = SManga.create().apply {
-        url = "/manga/$id-$slug"
+        url = id.toString()
         title = nome
         thumbnail_url = capa?.takeIf(String::isNotBlank)?.let { coverBaseUrl.resolve(it)?.toString() }
     }

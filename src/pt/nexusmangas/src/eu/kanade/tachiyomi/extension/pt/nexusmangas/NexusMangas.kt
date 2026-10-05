@@ -1,6 +1,5 @@
 package eu.kanade.tachiyomi.extension.pt.nexusmangas
 
-import eu.kanade.tachiyomi.network.POST
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.Page
@@ -22,6 +21,7 @@ import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 
@@ -77,8 +77,12 @@ abstract class NexusMangas : KeiSource() {
         if (response.code != 403 || index == null) return response
 
         response.close()
-        val body = ReadChapterRequestDto(fragment.substringBefore('/')).toJsonRequestBody()
-        val pageUrl = client.newCall(POST("$functionsUrl/read-chapter", readerHeaders, body)).execute()
+        val readRequest = Request.Builder()
+            .url("$functionsUrl/read-chapter")
+            .headers(readerHeaders)
+            .post(ReadChapterRequestDto(fragment.substringBefore('/')).toJsonRequestBody())
+            .build()
+        val pageUrl = client.newCall(readRequest).execute()
             .parseAs<ReadChapterDto>()
             .pageUrl(index)
 
@@ -142,7 +146,7 @@ abstract class NexusMangas : KeiSource() {
     override suspend fun getMangaByUrl(url: HttpUrl): SManga? {
         if (url.pathSegments.firstOrNull() != "obra") return null
         val slug = url.pathSegments.getOrNull(1)?.takeIf(String::isNotBlank) ?: return null
-        val manga = SManga.create().apply { this.url = "/obra/$slug" }
+        val manga = SManga.create().apply { this.url = slug }
 
         return fetchMangaUpdate(manga, emptyList(), fetchDetails = true, fetchChapters = false)
             .manga
@@ -188,11 +192,10 @@ abstract class NexusMangas : KeiSource() {
             .toPageList(chapterId)
     }
 
-    private val readerHeaders by lazy {
-        headersBuilder()
+    private val readerHeaders: Headers
+        get() = headersBuilder()
             .set("x-nexus-client", "reader-v3")
             .build()
-    }
 
     override val supportsFilterFetching: Boolean get() = true
 
@@ -222,9 +225,8 @@ abstract class NexusMangas : KeiSource() {
         )
     }
 
-    override fun getMangaUrl(manga: SManga): String = baseUrl + manga.url
-
-    override fun getChapterUrl(chapter: SChapter): String = baseUrl + chapter.url
+    // Entries saved before 1.6.5 keep the "/obra/" prefix.
+    override fun getMangaUrl(manga: SManga): String = "$baseUrl/obra/${manga.url.substringAfterLast('/')}"
 
     companion object {
         private const val API_HOST = "supabase.nexusmangas.com"

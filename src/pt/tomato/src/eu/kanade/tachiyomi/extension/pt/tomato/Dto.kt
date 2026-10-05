@@ -44,7 +44,7 @@ class FeedItemDto(
     private val thumbnail: String? = null,
 ) {
     fun toSManga() = SManga.create().apply {
-        url = "/manga/$id"
+        url = id.toString()
         title = name
         author = this@FeedItemDto.author?.takeIf(String::isNotBlank)
         thumbnail_url = thumbnail
@@ -75,7 +75,7 @@ class SearchItemDto(
     val isManga get() = type == "manga"
 
     fun toSManga() = SManga.create().apply {
-        url = "/manga/$id"
+        url = id.toString()
         title = name
         author = this@SearchItemDto.author
         thumbnail_url = image
@@ -103,7 +103,7 @@ class MangaDetailsDto(
     private val genre: String? = null,
 ) {
     fun toSManga() = SManga.create().apply {
-        url = "/manga/$id"
+        url = id.toString()
         title = name
         thumbnail_url = cover
         author = this@MangaDetailsDto.author?.takeIf(String::isNotBlank)
@@ -133,7 +133,7 @@ class ChapterDto(
     }
 
     fun toSChapter() = SChapter.create().apply {
-        url = "/chapter/$key"
+        url = key
         name = this@ChapterDto.name
         chapter_number = number
         date_upload = Instant.tryParse(date)

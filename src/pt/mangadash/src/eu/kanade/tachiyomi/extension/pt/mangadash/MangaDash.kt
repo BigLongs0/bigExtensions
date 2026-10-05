@@ -61,7 +61,7 @@ abstract class MangaDash : KeiSource() {
         val document = client.get("$baseUrl/capitulos?page=$page").asJsoup()
         val mangas = document.select("div.card-new h3.card-title a[href^=/manga/]").map { link ->
             SManga.create().apply {
-                setUrlWithoutDomain(link.absUrl("href"))
+                url = link.absUrl("href").toHttpUrl().pathSegments[1].substringBefore('-')
                 title = link.text()
                 thumbnail_url = link.closest("div.card-new")?.selectFirst(".card-poster img")?.absUrl("src")
             }
@@ -105,9 +105,9 @@ abstract class MangaDash : KeiSource() {
 
     override suspend fun getMangaByUrl(url: HttpUrl): SManga? {
         if (url.host != baseUrl.toHttpUrl().host || url.pathSegments.firstOrNull() != "manga") return null
-        val path = url.pathSegments.getOrNull(1)?.takeIf(String::isNotEmpty) ?: return null
+        val id = url.pathSegments.getOrNull(1)?.substringBefore('-')?.takeIf(String::isNotEmpty) ?: return null
 
-        return parseDetails(fetchSeriesPage("/manga/$path"), "/manga/$path")
+        return parseDetails(fetchSeriesPage(id), id)
     }
 
     override suspend fun fetchMangaUpdate(
@@ -116,13 +116,18 @@ abstract class MangaDash : KeiSource() {
         fetchDetails: Boolean,
         fetchChapters: Boolean,
     ): SMangaUpdate {
-        val document = fetchSeriesPage(manga.url)
+        val document = fetchSeriesPage(manga.mangaId)
 
-        return SMangaUpdate(parseDetails(document, manga.url), parseChapters(document))
+        return SMangaUpdate(parseDetails(document, manga.mangaId), parseChapters(document))
     }
 
-    private suspend fun fetchSeriesPage(path: String): Document {
-        val response = client.get(baseUrl + path)
+    override fun getMangaUrl(manga: SManga): String = "$baseUrl/manga/${manga.mangaId}"
+
+    // Entries saved before 1.6.2 hold "/manga/{id}-{slug}"; the site only needs the id.
+    private val SManga.mangaId get() = url.substringAfterLast('/').substringBefore('-')
+
+    private suspend fun fetchSeriesPage(id: String): Document {
+        val response = client.get("$baseUrl/manga/$id")
         if (response.request.url.pathSegments.firstOrNull() == "auth") {
             response.close()
             throw IOException("Obra +18: entre na sua conta pela WebView e ative o conteúdo adulto no perfil.")
@@ -130,8 +135,8 @@ abstract class MangaDash : KeiSource() {
         return response.asJsoup()
     }
 
-    private fun parseDetails(document: Document, path: String) = SManga.create().apply {
-        url = path
+    private fun parseDetails(document: Document, id: String) = SManga.create().apply {
+        url = id
         title = document.selectFirst("h1.neon-title")!!.text()
         thumbnail_url = document.selectFirst(".cover-3d img")?.absUrl("src")
         author = document.selectFirst("a.tag-author")?.text()

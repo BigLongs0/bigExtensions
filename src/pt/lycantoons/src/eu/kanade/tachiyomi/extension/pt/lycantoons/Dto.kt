@@ -44,7 +44,7 @@ class SeriesDto(
     val isNovel get() = seriesType == "NOVEL"
 
     fun toSManga() = SManga.create().apply {
-        url = "/series/$slug"
+        url = slug
         title = this@SeriesDto.title
         thumbnail_url = coverUrl?.takeIf(String::isNotBlank)
     }
@@ -69,7 +69,7 @@ class SeriesDetailsDto(
     private val seriesType: String? = null,
 ) {
     fun toSManga() = SManga.create().apply {
-        url = "/series/$slug"
+        url = slug
         title = this@SeriesDetailsDto.title
         thumbnail_url = coverUrl?.takeIf(String::isNotBlank)
         author = this@SeriesDetailsDto.author.known()

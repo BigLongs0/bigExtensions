@@ -89,11 +89,16 @@ abstract class Tomato :
     }
 
     override suspend fun getPageList(chapter: SChapter): List<Page> {
-        val key = chapter.url.substringAfter("/chapter/")
+        val key = chapter.url.removePrefix("/chapter/")
 
         return apiGet("/manga/pages/query/$key").parseAs<PagesDto>().data
             .mapIndexed { index, page -> Page(index, imageUrl = page.pageUrl) }
     }
+
+    // The app has no web pages; the captcha page is the only useful place to open.
+    override fun getMangaUrl(manga: SManga): String = baseUrl
+
+    override fun getChapterUrl(chapter: SChapter): String = baseUrl
 
     private suspend fun apiGet(path: String): Response = authorized { token ->
         client.get("$API_URL$path", authHeaders(token), ensureSuccess = false)

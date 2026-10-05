@@ -88,6 +88,9 @@ abstract class LycanToons : KeiSource() {
         ?.toSManga()
         ?: throw IOException("Obra não encontrada")
 
+    // Entries saved before 1.6.2 keep the "/series/" prefix.
+    override fun getMangaUrl(manga: SManga): String = "$baseUrl/series/${manga.url.substringAfterLast('/')}"
+
     private suspend fun fetchChapters(slug: String): List<ChapterDto> = client.get("$baseUrl/api/series/$slug/chapters").parseAs<ChapterListDto>().chapters
 
     override suspend fun getPageList(chapter: SChapter): List<Page> {
