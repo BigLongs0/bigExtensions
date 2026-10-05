@@ -537,6 +537,27 @@
         ]
       },
       {
+        "name": "Tomato",
+        "packageName": "eu.kanade.tachiyomi.extension.pt.tomato",
+        "resources": {
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/dd39c0b/tachiyomi-pt.tomato-v1.6.1.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/tomato/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/dd39c0b/tachiyomi-pt.tomato-v1.6.1.jar"
+        },
+        "extensionLib": "1.6",
+        "versionCode": "1",
+        "versionName": "1.6.1",
+        "contentWarning": "CONTENT_WARNING_MIXED",
+        "sources": [
+          {
+            "id": "3298973071492789784",
+            "name": "Tomato",
+            "language": "pt-BR",
+            "homeUrl": "https://biglongs0.github.io/bigExtensions/tomato"
+          }
+        ]
+      },
+      {
         "name": "Vegitoons",
         "packageName": "eu.kanade.tachiyomi.extension.pt.vegitoons",
         "resources": {

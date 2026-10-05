@@ -249,6 +249,16 @@
       "sha256": "f253bd9c3f477a21f02e71013164c1f093fb39fb5e80af529b6d9ba04057c2c1"
     }
   },
+  "eu.kanade.tachiyomi.extension.pt.tomato": {
+    "apk": {
+      "name": "tachiyomi-pt.tomato-v1.6.1.apk",
+      "sha256": "5612f1b2046c48546c39194835e1f50e9e7fbcd26f5f9f2a7a6aeb5ed6bc2ab3"
+    },
+    "jar": {
+      "name": "tachiyomi-pt.tomato-v1.6.1.jar",
+      "sha256": "f50ddf0abb2a307020bea71ef103b50a06d767c30747a9d2502c6cc14e27da48"
+    }
+  },
   "eu.kanade.tachiyomi.extension.pt.vegitoons": {
     "apk": {
       "name": "tachiyomi-pt.vegitoons-v1.6.14.apk",
