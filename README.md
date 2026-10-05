@@ -10,49 +10,13 @@ Open **More → Settings → Browse → Extension repos** and add:
 https://raw.githubusercontent.com/BigLongs0/bigExtensions/repo/index.json
 ```
 
-The app will list every source below. Updates arrive through the same screen.
+The app will list every source. Updates arrive through the same screen.
 
 If you added the old repository under `BigLongss` or `Biglongs1`, remove that URL and add the
 new one above to receive updates.
 
 Forks lag behind on repo support, so if the app rejects the URL, check that it is
 up to date. Yokai, for instance, only accepts this format from 1.10.0 onwards.
-
-## Sources
-
-| Source | Language | Notes |
-| --- | --- | --- |
-| AstraToons | pt-BR | |
-| Asura Scans | en | |
-| Atsumaru | en | |
-| Aura Toons | pt-BR | |
-| Comix | en | |
-| CorujaToon | pt-BR | Requires an account |
-| Imperio da Britannia | pt-BR | |
-| Ink Scan | pt-BR | Requires an account; login through WebView |
-| Kagane | en | |
-| KuroMangas | pt-BR | Requires an account |
-| LoversToon | pt-BR | |
-| MangaBall | en | |
-| MangaDot | en | |
-| MangaFire | en | |
-| MangaLivre.blog | pt-BR | |
-| MangaStop | pt-BR | |
-| Mangás Brasuka | pt-BR | Chapters unlock through the site's own step in WebView |
-| MangoToons | pt-BR | |
-| Nexus Mangás | pt-BR | |
-| NoxManga | pt-BR | |
-| OneReader | pt-BR | |
-| OniSaga | en | |
-| Vegitoons | pt-BR | |
-| Yomu Comics | pt-BR | Requires an account |
-
-KuroMangas and Yomu Comics require credentials under the extension settings.
-For Ink Scan, open the source in WebView, sign in and complete the site's CAPTCHA,
-then return to the app and refresh. The extension reuses and refreshes that session.
-CorujaToon needs your email and password in its settings, or a WebView login.
-Mangás Brasuka asks every reader to pass its "Um passo para ler" step before a chapter opens.
-Open the chapter in WebView, complete that step, then return to the app and retry.
 
 ## Requests
 
