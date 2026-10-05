@@ -6,6 +6,7 @@ import eu.kanade.tachiyomi.source.model.SManga
 import keiyoushi.utils.tryParse
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import okhttp3.HttpUrl
 import java.io.IOException
 import kotlin.time.Instant
 
@@ -26,10 +27,13 @@ class WorkDto(
     @SerialName("work_genres") private val workGenres: List<WorkGenreDto> = emptyList(),
     private val chapters: List<ChapterDto> = emptyList(),
 ) {
-    fun toSManga() = SManga.create().apply {
+    // cover_url is a storage key that the site resolves through a redirect to a presigned link.
+    fun toSManga(mediaUrl: HttpUrl) = SManga.create().apply {
         url = "/obra/$slug"
         title = this@WorkDto.title
-        thumbnail_url = coverUrl?.takeIf(String::isNotBlank)
+        thumbnail_url = coverUrl?.takeIf(String::isNotBlank)?.let {
+            mediaUrl.newBuilder().addQueryParameter("key", it).build().toString()
+        }
         author = this@WorkDto.author?.takeIf(String::isNotBlank)
         artist = this@WorkDto.artist?.takeIf(String::isNotBlank)
         description = buildString {

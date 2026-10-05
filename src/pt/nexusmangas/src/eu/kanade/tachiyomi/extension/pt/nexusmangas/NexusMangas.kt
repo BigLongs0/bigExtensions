@@ -32,12 +32,15 @@ abstract class NexusMangas : KeiSource() {
 
     private val functionsUrl = "https://$API_HOST/functions/v1"
 
+    private val mediaUrl = "$functionsUrl/read-public-media".toHttpUrl()
+
     private val pageInterceptor = Interceptor(::renewExpiredPage)
 
+    // Covers go through the media redirect, so a page of them would otherwise queue behind the API limit.
     override fun OkHttpClient.Builder.configureClient(): OkHttpClient.Builder = this
         .addInterceptor(::authorizeApi)
         .addInterceptor(pageInterceptor)
-        .rateLimit(3) { it.host == API_HOST }
+        .rateLimit(3) { it.host == API_HOST && it.encodedPath != mediaUrl.encodedPath }
 
     // Some apps treat any 403 from a Cloudflare host as a challenge, which would hide an expired link.
     private val pageClient by lazy {
@@ -130,7 +133,7 @@ abstract class NexusMangas : KeiSource() {
 
         val works = client.get(url).parseAs<List<WorkDto>>()
 
-        return MangasPage(works.map(WorkDto::toSManga), works.size == PAGE_SIZE)
+        return MangasPage(works.map { it.toSManga(mediaUrl) }, works.size == PAGE_SIZE)
     }
 
     // PostgREST reads commas and parentheses as filter syntax.
@@ -162,7 +165,7 @@ abstract class NexusMangas : KeiSource() {
         val work = client.get(url).parseAs<List<WorkDto>>().firstOrNull()
             ?: throw IOException("Obra não encontrada")
 
-        return SMangaUpdate(manga = work.toSManga(), chapters = work.chapterList)
+        return SMangaUpdate(manga = work.toSManga(mediaUrl), chapters = work.chapterList)
     }
 
     override suspend fun getPageList(chapter: SChapter): List<Page> {
