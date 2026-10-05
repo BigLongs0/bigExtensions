@@ -327,6 +327,48 @@
         ]
       },
       {
+        "name": "LycanToons",
+        "packageName": "eu.kanade.tachiyomi.extension.pt.lycantoons",
+        "resources": {
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/9d872ec/tachiyomi-pt.lycantoons-v1.6.1.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/lycantoons/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/9d872ec/tachiyomi-pt.lycantoons-v1.6.1.jar"
+        },
+        "extensionLib": "1.6",
+        "versionCode": "1",
+        "versionName": "1.6.1",
+        "contentWarning": "CONTENT_WARNING_SAFE",
+        "sources": [
+          {
+            "id": "9220781378249537158",
+            "name": "LycanToons",
+            "language": "pt-BR",
+            "homeUrl": "https://lycantoons.com"
+          }
+        ]
+      },
+      {
+        "name": "Mang\u00e1Dash",
+        "packageName": "eu.kanade.tachiyomi.extension.pt.mangadash",
+        "resources": {
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/9d872ec/tachiyomi-pt.mangadash-v1.6.1.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/mangadash/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/9d872ec/tachiyomi-pt.mangadash-v1.6.1.jar"
+        },
+        "extensionLib": "1.6",
+        "versionCode": "1",
+        "versionName": "1.6.1",
+        "contentWarning": "CONTENT_WARNING_MIXED",
+        "sources": [
+          {
+            "id": "443994894937697339",
+            "name": "Mang\u00e1Dash",
+            "language": "pt-BR",
+            "homeUrl": "https://mangadash.net"
+          }
+        ]
+      },
+      {
         "name": "MangaLivre.blog",
         "packageName": "eu.kanade.tachiyomi.extension.pt.mangalivreblog",
         "resources": {

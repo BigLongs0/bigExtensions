@@ -149,6 +149,26 @@
       "sha256": "60938ea24a51156caf4a4b0668d2c08bd80b64082acd15b53eacb695dccebf43"
     }
   },
+  "eu.kanade.tachiyomi.extension.pt.lycantoons": {
+    "apk": {
+      "name": "tachiyomi-pt.lycantoons-v1.6.1.apk",
+      "sha256": "7efd0df1d6b88414e91f25db4b17d01071d31e4e0fb763d1aa227b40111e2b13"
+    },
+    "jar": {
+      "name": "tachiyomi-pt.lycantoons-v1.6.1.jar",
+      "sha256": "530ccbc6bb1cca96a7bee548d68965de98c2a8a637f663788eb2732157a80c92"
+    }
+  },
+  "eu.kanade.tachiyomi.extension.pt.mangadash": {
+    "apk": {
+      "name": "tachiyomi-pt.mangadash-v1.6.1.apk",
+      "sha256": "56660a57700230794d2dc6fb971d80d479a3a76ee309a008c00bf55268753ead"
+    },
+    "jar": {
+      "name": "tachiyomi-pt.mangadash-v1.6.1.jar",
+      "sha256": "b6c5e9380c0d4db4a876cd7b1c5132cb779fe29cea23e01e2430d1bba37c5a77"
+    }
+  },
   "eu.kanade.tachiyomi.extension.pt.mangalivreblog": {
     "apk": {
       "name": "tachiyomi-pt.mangalivreblog-v1.6.3.apk",
