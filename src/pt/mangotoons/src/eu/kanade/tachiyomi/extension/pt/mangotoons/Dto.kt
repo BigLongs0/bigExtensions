@@ -8,25 +8,20 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.time.Instant
 
+private const val CDN_URL = "https://cdn.mangotoons.com"
+
+private fun String.absoluteCdnUrl() = if (startsWith("/")) CDN_URL + this else this
+
 @Serializable
 class ListDto(
     private val obras: List<WorkDto> = emptyList(),
-    private val pagination: PaginationDto = PaginationDto(),
+    private val pagina: Int,
+    @SerialName("total_paginas") private val totalPaginas: Int,
 ) {
     val mangas get() = obras.map(WorkDto::toSManga)
 
-    val hasNextPage get() = pagination.hasNextPage
+    val hasNextPage get() = pagina < totalPaginas
 }
-
-@Serializable
-class PaginationDto(
-    val hasNextPage: Boolean = false,
-)
-
-@Serializable
-class WorkWrapperDto(
-    val obra: WorkDto,
-)
 
 @Serializable
 class WorkDto(
@@ -34,28 +29,21 @@ class WorkDto(
     private val nome: String,
     private val imagem: String? = null,
     private val descricao: String? = null,
-    @SerialName("titulo_alternativo") private val alternativeTitle: String? = null,
-    @SerialName("status_nome") private val statusName: String? = null,
-    @SerialName("formato_nome") private val formatName: String? = null,
-    private val tags: List<TagDto> = emptyList(),
+    private val status: String? = null,
+    private val formato: String? = null,
+    private val tags: List<String> = emptyList(),
     private val capitulos: List<ChapterDto> = emptyList(),
 ) {
     fun toSManga() = SManga.create().apply {
-        url = "/obra/$id"
+        url = id.toString()
         title = nome
-        thumbnail_url = imagem?.takeIf(String::isNotBlank)
-        description = buildString {
-            descricao?.takeIf(String::isNotBlank)?.let(::append)
-            alternativeTitle?.takeIf(String::isNotBlank)?.let {
-                if (isNotEmpty()) append("\n\n")
-                append("Título alternativo: $it")
-            }
-        }.takeIf(String::isNotBlank)
-        genre = (listOfNotNull(formatName?.takeIf(String::isNotBlank)) + tags.map(TagDto::nome))
+        thumbnail_url = imagem?.takeIf(String::isNotBlank)?.absoluteCdnUrl()
+        description = descricao?.takeIf(String::isNotBlank)
+        genre = (listOfNotNull(formato?.takeIf(String::isNotBlank)) + tags)
             .distinct()
             .joinToString()
-        status = when (statusName?.lowercase()) {
-            "em andamento", "ativo" -> SManga.ONGOING
+        status = when (this@WorkDto.status?.lowercase()) {
+            "em andamento", "lançando", "lancando", "ativo" -> SManga.ONGOING
             "completo", "concluído", "concluido", "finalizado" -> SManga.COMPLETED
             "hiato", "pausado" -> SManga.ON_HIATUS
             "cancelado" -> SManga.CANCELLED
@@ -67,66 +55,34 @@ class WorkDto(
 }
 
 @Serializable
-class TagDto(
-    val nome: String,
-)
-
-@Serializable
-class ChapterListDto(
-    val capitulos: List<ChapterDto> = emptyList(),
-)
-
-@Serializable
 class ChapterDto(
-    private val id: Int,
-    private val nome: String? = null,
-    private val numero: Float = -1f,
-    private val paywall: Boolean = false,
-    @SerialName("criado_em") private val createdAt: String? = null,
+    private val numero: String,
+    private val titulo: String? = null,
+    @SerialName("is_vip") private val isVip: Boolean = false,
+    @SerialName("published_at") private val publishedAt: String? = null,
 ) {
+    // The reader looks chapters up by their number exactly as the API spells it.
     fun toSChapter(workId: Int) = SChapter.create().apply {
-        url = "/obra/$workId/capitulo/$id"
+        url = "/obra/$workId/capitulo/$numero"
         name = buildString {
-            append(nome?.takeIf(String::isNotBlank) ?: "Capítulo ${numero.toString().removeSuffix(".0")}")
-            if (paywall) append(" \uD83D\uDD12")
+            append(titulo?.takeIf(String::isNotBlank) ?: "Capítulo $numero")
+            if (isVip) append(" 🔒")
         }
-        chapter_number = numero
-        date_upload = Instant.tryParse(createdAt)
+        chapter_number = numero.toFloatOrNull() ?: -1f
+        date_upload = Instant.tryParse(publishedAt)
     }
 }
 
 @Serializable
-class ChapterDetailDto(
-    private val capitulo: ChapterPagesDto = ChapterPagesDto(),
+class ManifestDto(
+    private val pages: List<ManifestPageDto> = emptyList(),
+    val isVip: Boolean = false,
 ) {
-    val isLocked get() = capitulo.paywall
-
-    fun toPageList() = capitulo.paginas.mapIndexed { index, page -> Page(index, imageUrl = page.url) }
+    fun toPageList() = pages.sortedBy(ManifestPageDto::index).map { Page(it.index, imageUrl = it.url.absoluteCdnUrl()) }
 }
 
 @Serializable
-class ChapterPagesDto(
-    val paginas: List<PageDto> = emptyList(),
-    val paywall: Boolean = false,
-)
-
-@Serializable
-class PageDto(
+class ManifestPageDto(
+    val index: Int,
     val url: String,
-)
-
-@Serializable
-class FormatListDto(
-    val formatos: List<OptionDto> = emptyList(),
-)
-
-@Serializable
-class StatusListDto(
-    val status: List<OptionDto> = emptyList(),
-)
-
-@Serializable
-class OptionDto(
-    val id: Int,
-    val nome: String,
 )

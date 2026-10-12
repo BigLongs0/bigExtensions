@@ -1,21 +1,6 @@
-@file:Suppress("SpellCheckingInspection")
-
 package eu.kanade.tachiyomi.extension.pt.mangotoons
 
 import eu.kanade.tachiyomi.source.model.Filter
-import kotlinx.serialization.Serializable
-
-@Serializable
-class FilterData(
-    val formats: List<FilterEntry> = emptyList(),
-    val statuses: List<FilterEntry> = emptyList(),
-)
-
-@Serializable
-class FilterEntry(
-    val name: String,
-    val id: Int,
-)
 
 open class SelectFilter(
     name: String,
@@ -24,14 +9,39 @@ open class SelectFilter(
     val selectedValue get() = options[state].second
 }
 
-class FormatFilter(formats: List<FilterEntry>) :
+class SortFilter :
     SelectFilter(
-        "Formato",
-        listOf("Todos" to "") + formats.map { it.name to it.id.toString() },
+        "Ordenar",
+        listOf(
+            "Mais populares" to "populares",
+            "Mais recentes" to "recentes",
+            "Melhor avaliados" to "rating",
+            "Mais capítulos" to "capitulos",
+            "A-Z" to "alfabetico",
+        ),
     )
 
-class StatusFilter(statuses: List<FilterEntry>) :
+class FormatFilter :
+    SelectFilter(
+        "Formato",
+        listOf(
+            "Todos" to "",
+            "Manhwa" to "MANHWA",
+            "Mangá" to "MANGA",
+            "Manhua" to "MANHUA",
+            "Webtoon" to "WEBTOON",
+            "Novel" to "NOVEL",
+            "Comic" to "COMIC",
+        ),
+    )
+
+class StatusFilter :
     SelectFilter(
         "Status",
-        listOf("Todos" to "") + statuses.map { it.name to it.id.toString() },
+        listOf(
+            "Todos" to "",
+            "Em andamento" to "Em andamento",
+            "Completo" to "Completo",
+            "Hiato" to "Hiato",
+        ),
     )
