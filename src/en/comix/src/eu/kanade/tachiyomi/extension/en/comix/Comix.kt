@@ -486,23 +486,57 @@ abstract class Comix :
     ): List<SChapter> {
         val mangaSlug = manga.url.removePrefix("/")
         val mangaId = manga.mangaId() ?: throw Exception("Refresh manga details")
-        val webViewDocument = document.clone()
-        val mainScript = webViewDocument.selectFirst(
-            "script[type=module][src*=\"/dist/main-\"]",
+        val payload = runWithSiteApi(
+            document,
+            $$"""
+                const items = [];
+                let page = 1;
+                while (page <= $${MAX_CHAPTER_PAGES}) {
+                    const response = await apiGet(
+                        '/manga/' + encodeURIComponent($${JSONObject.quote(mangaId)}) + '/chapters',
+                        { params: { page, limit: 100, order: { number: 'desc' } } }
+                    );
+                    const pageItems = response?.items;
+                    if (!Array.isArray(pageItems) || pageItems.length === 0) break;
+
+                    items.push(...pageItems);
+                    if (pageItems.some(item => item.id === $${latestChapterId ?: "null"})) break;
+
+                    const meta = response.meta || response.pagination || {};
+                    const lastPage = meta.lastPage || meta.last_page || page;
+                    if (!(meta.hasNext || page < lastPage)) break;
+                    page++;
+                }
+                pass(JSON.stringify(items));
+            """.trimIndent(),
         )
+
+        return payload.parseAs<List<Chapter>>().map { it.toSChapter(mangaSlug) }
+    }
+
+    // Loads the site's bundles without running the app and calls its own API client, which signs
+    // requests and decrypts responses in an obfuscated module. Its method names are scrambled, so
+    // the client is found as the exported function that awaits `<client>.get(`. [apiScript] runs
+    // with `apiGet(path, options)` and `pass(payload)` in scope.
+    private suspend fun runWithSiteApi(document: Document, apiScript: String): String {
+        val webViewDocument = document.clone()
+        val mainScript = webViewDocument.selectFirst("script[type=module][src*=\"/dist/main-\"]")
         val mainScriptUrl = mainScript?.absUrl("src").orEmpty()
         if (mainScriptUrl.isNotEmpty()) mainScript?.remove()
-        val payload = runInWebView(
+
+        return runInWebView(
             document = webViewDocument,
             buildScript = { passPayloadName, rejectName ->
                 $$"""
                     (function () {
-                        const payloadKey = '__comixChapterPayload';
-                        const mangaId = $${JSONObject.quote(mangaId)};
-                        const mainScriptUrl = $${JSONObject.quote(mainScriptUrl)};
-                        const latestChapterId = $${latestChapterId ?: "null"};
+                        const payloadKey = '__comixApiPayload';
                         if (window[payloadKey]) return null;
                         window[payloadKey] = true;
+                        window.addEventListener('waf:captcha:open', () => {
+                            window.$${rejectName}(new Error($${JSONObject.quote(CAPTCHA_MESSAGE)}));
+                        });
+                        const mainScriptUrl = $${JSONObject.quote(mainScriptUrl)};
+                        const pass = payload => window.$${passPayloadName}(payload);
 
                         (async () => {
                             try {
@@ -510,42 +544,27 @@ abstract class Comix :
                                 const mainResponse = await fetch(mainScriptUrl);
                                 if (!mainResponse.ok) throw new Error('Could not load main bundle');
                                 const mainJavaScript = await mainResponse.text();
-                                const environmentFile = mainJavaScript.match(
-                                    /from\s*["']\.\/(env-[^"']+\.js)["']/
-                                )?.[1];
-                                if (!environmentFile) throw new Error('Could not find environment bundle');
-
+                                const bundleFiles = [...new Set(Array.from(
+                                    mainJavaScript.matchAll(/\bfrom\s*["']\.\/([^"']+\.js)["']/g),
+                                    match => match[1]
+                                ))];
                                 const importBundle = new Function('url', 'return import(url)');
-                                const environment = await importBundle(
-                                    new URL(environmentFile, mainScriptUrl).href
-                                );
-                                const mangaApi = Object.values(environment).find(value =>
-                                    value &&
-                                    typeof value === 'object' &&
-                                    typeof value.chapters === 'function'
-                                );
-                                if (!mangaApi) throw new Error('Could not find manga API');
-
-                                const items = [];
-                                let page = 1;
-                                while (page <= $${MAX_CHAPTER_PAGES}) {
-                                    const response = await mangaApi.chapters(mangaId, {
-                                        page,
-                                        limit: 100,
-                                        order: { number: 'desc' }
-                                    });
-                                    const pageItems = response?.items;
-                                    if (!Array.isArray(pageItems) || pageItems.length === 0) break;
-
-                                    items.push(...pageItems);
-                                    if (pageItems.some(item => item.id === latestChapterId)) break;
-
-                                    const meta = response.meta || response.pagination || {};
-                                    const lastPage = meta.lastPage || meta.last_page || page;
-                                    if (!(meta.hasNext || page < lastPage)) break;
-                                    page++;
+                                let apiGet = null;
+                                for (const file of bundleFiles) {
+                                    const bundle = await importBundle(new URL(file, mainScriptUrl).href);
+                                    for (const value of Object.values(bundle)) {
+                                        if (!value || typeof value !== 'object') continue;
+                                        apiGet = Object.values(value).find(fn =>
+                                            typeof fn === 'function' &&
+                                            /await\s*[\w$]+\.get\(/.test(Function.prototype.toString.call(fn))
+                                        ) || null;
+                                        if (apiGet) break;
+                                    }
+                                    if (apiGet) break;
                                 }
-                                window.$${passPayloadName}(JSON.stringify(items));
+                                if (!apiGet) throw new Error('Could not find API client');
+
+                                $${apiScript}
                             } catch (error) {
                                 window.$${rejectName}(error);
                             }
@@ -555,8 +574,6 @@ abstract class Comix :
                 """.trimIndent()
             },
         )
-
-        return payload.parseAs<List<Chapter>>().map { it.toSChapter(mangaSlug) }
     }
 
     private fun selectChapters(
@@ -649,75 +666,37 @@ abstract class Comix :
         return chapters.map { it.toSChapter(mangaSlug) }
     }
 
-    // V3 grid-scramble pages must NOT send Origin — the server withholds X-Scramble-Seed when
-    // Origin is present. Legacy byte-XOR pages need Origin to receive X-Enc-Seed.
+    // The image hosts block requests that carry the site as Referer or Origin, and V3
+    // grid-scramble pages only get X-Scramble-Seed without Origin.
     override fun imageRequest(page: Page): Request {
         val imageUrl = page.imageUrl ?: return super.imageRequest(page)
-        val urlWithoutFragment = imageUrl.substringBefore('#')
-        val imageHost = urlWithoutFragment.toHttpUrlOrNull()?.host.orEmpty()
-        val isScrambled = imageUrl.contains("#scrambled")
-        val isV3 = urlWithoutFragment.toHttpUrlOrNull()?.queryParameterNames?.contains("v3") == true
-        val isLegacyScramble = isScrambled && !isV3
-        val baseUrlHost = baseUrl.toHttpUrl().host
-        val requestHeaders = if (
-            imageHost.isNotEmpty() &&
-            !imageHost.endsWith(baseUrlHost) &&
-            !isLegacyScramble
-        ) {
+        val imageHost = imageUrl.toHttpUrlOrNull()?.host.orEmpty()
+        val requestHeaders = if (imageHost.isNotEmpty() && !imageHost.endsWith(baseUrl.toHttpUrl().host)) {
             headersBuilder()
+                .removeAll("Referer")
                 .removeAll("Origin")
                 .build()
         } else {
             headers
         }
-        return GET(urlWithoutFragment, requestHeaders)
+        return GET(imageUrl, requestHeaders)
     }
 
     override suspend fun getPageList(chapter: SChapter): List<Page> {
         getNativePageList(chapter)?.let { return it }
 
+        val chapterId = chapter.chapterId() ?: throw Exception("Refresh the chapter list")
         val document = client.get(getChapterUrl(chapter)).asJsoup()
-        val payload = runInWebView(
-            document = document,
-            buildScript = { passPayloadName, _ ->
-                """
-                (function () {
-                    const payloadKey = '__comixPagePayload';
-                    const capture = parsed => {
-                        try {
-                            if (parsed && parsed.result && parsed.result.pages) {
-                                window[payloadKey] = JSON.stringify(parsed);
-                                window.$passPayloadName(window[payloadKey]);
-                                return true;
-                            }
-                        } catch (e) {}
-                        return false;
-                    };
-
-                    if (window[payloadKey]) return window[payloadKey];
-
-                    try {
-                        const raw = document.querySelector('script#initial-data')?.textContent;
-                        const queries = raw && JSON.parse(raw).queries;
-                        if (queries) Object.values(queries).some(capture);
-                    } catch (e) {}
-
-                    if (window[payloadKey]) return window[payloadKey];
-                    if (JSON.parse.__comixPageCaptureInstalled) return null;
-                    const originalParse = JSON.parse;
-                    const proxiedParse = new Proxy(originalParse, {
-                        apply(target, thisArg, args) {
-                            const parsed = Reflect.apply(target, thisArg, args);
-                            capture(parsed);
-                            return parsed;
-                        }
-                    });
-                    proxiedParse.__comixPageCaptureInstalled = true;
-                    JSON.parse = proxiedParse;
-                    return window[payloadKey] || null;
-                })();
-                """.trimIndent()
-            },
+        val payload = runWithSiteApi(
+            document,
+            """
+                const response = await apiGet('/chapters/$chapterId');
+                const data = response?.result ?? response;
+                const raw = data?.pages;
+                // Mirrors the site's reader: pages come either as a list or as { baseUrl, items }.
+                const pages = Array.isArray(raw) ? { items: raw } : (raw || {});
+                pass(JSON.stringify({ result: { pages: { baseUrl: pages.baseUrl ?? '', items: pages.items ?? [] } } }));
+            """.trimIndent(),
         )
 
         return buildPages(payload.parseAs())
@@ -725,24 +704,20 @@ abstract class Comix :
 
     private fun buildPages(response: ChapterResponse): List<Page> {
         val pages = response.result.pages
-        val base = pages.baseUrl.trimEnd('/')
+        val base = pages.baseUrl.trimEnd('/').ifEmpty { baseUrl }
 
         return pages.items.mapIndexed { index, img ->
             val full = if (img.url.startsWith("http")) img.url else "$base/${img.url.trimStart('/')}"
             // V3 pages need the query flag so the server returns grid-scramble headers.
-            // Legacy byte-XOR pages: add #scrambled so imageRequest keeps Origin for x-enc-seed
             val isV3 = img.s == 1 || full.contains("?v3")
-            val isLegacyScramble = !isV3 && (index + 1) % 4 == 0
-            val url = when {
-                isV3 -> full.toHttpUrl().newBuilder().apply {
+            val url = if (isV3) {
+                full.toHttpUrl().newBuilder().apply {
                     if (!full.toHttpUrl().queryParameterNames.contains("v3")) {
                         addQueryParameter("v3", null)
                     }
                 }.build().toString()
-
-                isLegacyScramble -> "$full#scrambled"
-
-                else -> full
+            } else {
+                full
             }
             Page(index, imageUrl = url)
         }
@@ -1088,6 +1063,7 @@ abstract class Comix :
         private const val WEBVIEW_TIMEOUT_SECONDS = 120L
         private const val SCRIPT_RETRY_INTERVAL_MS = 100L
         private const val MAX_CHAPTER_PAGES = 200
+        private const val CAPTCHA_MESSAGE = "Comix asks for a security check. Open the title in WebView, solve it, then refresh."
         private const val OFFICIAL_GROUP_ID = 10702
         private const val HEX = "0123456789ABCDEF"
         private const val URI_COMPONENT_SAFE_CHARS = "-_.!~*'()"
