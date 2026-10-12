@@ -6,7 +6,7 @@ plugins {
 
 keiyoushi {
     name = "MangaDot"
-    versionCode = 1
+    versionCode = 2
     contentWarning = ContentWarning.MIXED
     libVersion = "1.6"
 
@@ -18,4 +18,8 @@ keiyoushi {
     deeplink {
         path("/manga/..*")
     }
+}
+
+dependencies {
+    implementation(project(":lib:webviewfetch"))
 }

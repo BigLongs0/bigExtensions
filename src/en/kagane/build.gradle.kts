@@ -6,7 +6,7 @@ plugins {
 
 keiyoushi {
     name = "Kagane"
-    versionCode = 31
+    versionCode = 32
     contentWarning = ContentWarning.MIXED
     libVersion = "1.6"
 
@@ -18,4 +18,8 @@ keiyoushi {
     deeplink {
         path("/series/..*")
     }
+}
+
+dependencies {
+    implementation(project(":lib:webviewfetch"))
 }

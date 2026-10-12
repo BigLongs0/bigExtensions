@@ -16,6 +16,7 @@ import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.model.SMangaUpdate
 import eu.kanade.tachiyomi.util.asJsoup
 import keiyoushi.annotation.Source
+import keiyoushi.lib.webviewfetch.WebViewFetchInterceptor
 import keiyoushi.network.get
 import keiyoushi.network.post
 import keiyoushi.network.rateLimit
@@ -66,7 +67,10 @@ abstract class OniSaga :
         encodeDefaults = true
     }
 
+    // onisaga.com challenges every non-browser client, but not the WebView.
     override fun OkHttpClient.Builder.configureClient() = apply {
+        interceptors().removeAll { it.javaClass.simpleName == "CloudflareInterceptor" }
+        addInterceptor(WebViewFetchInterceptor())
         rateLimit(4)
     }
 

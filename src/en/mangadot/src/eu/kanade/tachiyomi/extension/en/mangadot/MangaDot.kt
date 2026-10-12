@@ -7,6 +7,7 @@ import eu.kanade.tachiyomi.source.model.SChapter
 import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.model.SMangaUpdate
 import keiyoushi.annotation.Source
+import keiyoushi.lib.webviewfetch.WebViewFetchInterceptor
 import keiyoushi.network.get
 import keiyoushi.source.KeiSource
 import keiyoushi.utils.firstInstanceOrNull
@@ -17,11 +18,18 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.JsonElement
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.OkHttpClient
 
 @Source
 abstract class MangaDot : KeiSource() {
 
     private val apiUrl get() = "$baseUrl/api"
+
+    // mangadot.net challenges every non-browser client, but not the WebView.
+    override fun OkHttpClient.Builder.configureClient(): OkHttpClient.Builder = apply {
+        interceptors().removeAll { it.javaClass.simpleName == "CloudflareInterceptor" }
+        addInterceptor(WebViewFetchInterceptor())
+    }
 
     override suspend fun getPopularManga(page: Int): MangasPage = getSection("most-tracked", page)
 

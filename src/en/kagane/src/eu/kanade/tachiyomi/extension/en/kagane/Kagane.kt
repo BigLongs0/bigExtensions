@@ -13,6 +13,7 @@ import eu.kanade.tachiyomi.source.model.SChapter
 import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.model.SMangaUpdate
 import keiyoushi.annotation.Source
+import keiyoushi.lib.webviewfetch.WebViewFetchInterceptor
 import keiyoushi.network.get
 import keiyoushi.network.post
 import keiyoushi.network.rateLimit
@@ -52,8 +53,11 @@ abstract class Kagane :
 
     private val prefs = getPreferences()
 
+    // kagane.to challenges every non-browser client, but not the WebView.
     override fun OkHttpClient.Builder.configureClient() = apply {
+        interceptors().removeAll { it.javaClass.simpleName == "CloudflareInterceptor" }
         addInterceptor(::refreshTokenInterceptor)
+        addInterceptor(WebViewFetchInterceptor())
         rateLimit(3)
     }
 

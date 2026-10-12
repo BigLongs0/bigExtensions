@@ -6,7 +6,7 @@ plugins {
 
 keiyoushi {
     name = "OniSaga"
-    versionCode = 4
+    versionCode = 5
     contentWarning = ContentWarning.MIXED
     libVersion = "1.6"
 
@@ -20,4 +20,8 @@ keiyoushi {
         path("/manga/..*")
         path("/read/..*")
     }
+}
+
+dependencies {
+    implementation(project(":lib:webviewfetch"))
 }
