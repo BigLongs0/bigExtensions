@@ -53,13 +53,13 @@
         "name": "Comix",
         "packageName": "eu.kanade.tachiyomi.extension.en.comix",
         "resources": {
-          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.comix-v1.6.37.apk",
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/015541b/tachiyomi-en.comix-v1.6.38.apk",
           "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/en/comix/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.comix-v1.6.37.jar"
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/015541b/tachiyomi-en.comix-v1.6.38.jar"
         },
         "extensionLib": "1.6",
-        "versionCode": "37",
-        "versionName": "1.6.37",
+        "versionCode": "38",
+        "versionName": "1.6.38",
         "contentWarning": "CONTENT_WARNING_MIXED",
         "sources": [
           {

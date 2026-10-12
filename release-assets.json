@@ -21,12 +21,12 @@
   },
   "eu.kanade.tachiyomi.extension.en.comix": {
     "apk": {
-      "name": "tachiyomi-en.comix-v1.6.37.apk",
-      "sha256": "3aa105a5bd23be17855139de229910e046846e4905633bf3b9489e89c6df796c"
+      "name": "tachiyomi-en.comix-v1.6.38.apk",
+      "sha256": "6d62d75a9f20516aa8fd79c5477ff533c244ffcda016d12883d592abf3308caa"
     },
     "jar": {
-      "name": "tachiyomi-en.comix-v1.6.37.jar",
-      "sha256": "b6664bb860e40bc217cac1e8bfc1375e1335ece6fdaeca95c033398129186b88"
+      "name": "tachiyomi-en.comix-v1.6.38.jar",
+      "sha256": "9d9d44db7c6c7021ecbb840d12e23503513d207bc6ad801e03772c1f21cb131b"
     }
   },
   "eu.kanade.tachiyomi.extension.en.kagane": {
