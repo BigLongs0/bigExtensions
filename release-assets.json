@@ -31,12 +31,12 @@
   },
   "eu.kanade.tachiyomi.extension.en.kagane": {
     "apk": {
-      "name": "tachiyomi-en.kagane-v1.6.31.apk",
-      "sha256": "e1871d1430de370b0ccf06089e9066d7dc4ab9505ac6cc7808e5c5fd82166217"
+      "name": "tachiyomi-en.kagane-v1.6.32.apk",
+      "sha256": "d5be1ace00bab126ffd290d3d3f468e2e4adcd40fe793e2e6f1b146c07756d2d"
     },
     "jar": {
-      "name": "tachiyomi-en.kagane-v1.6.31.jar",
-      "sha256": "7b7dc3b6dc9805e368a17fc3b83548e2ebbb55cca988e060690aa237b318187a"
+      "name": "tachiyomi-en.kagane-v1.6.32.jar",
+      "sha256": "87194e712f727fba4ecddf5e00b4e3914c871621b11e409a66efb01d4fb9b2ee"
     }
   },
   "eu.kanade.tachiyomi.extension.en.mangaball": {
@@ -51,12 +51,12 @@
   },
   "eu.kanade.tachiyomi.extension.en.mangadot": {
     "apk": {
-      "name": "tachiyomi-en.mangadot-v1.6.1.apk",
-      "sha256": "e3a5e3a74cacd883b7ecdcc1b28a40a39809b0ebe8fb52a8d907a0dfa45b52a4"
+      "name": "tachiyomi-en.mangadot-v1.6.2.apk",
+      "sha256": "5b590132d7af5c61562dfbb76e8bd01e5d03cd76f546f49e132829f6e6625475"
     },
     "jar": {
-      "name": "tachiyomi-en.mangadot-v1.6.1.jar",
-      "sha256": "1766bc460886dac5f40f43a07f6d5288fbe899596b51f58e6acd26100ddcaa1b"
+      "name": "tachiyomi-en.mangadot-v1.6.2.jar",
+      "sha256": "9ef7968774f1cc70375fe100c72bde35e054bb4453822197298076dc6f1a8187"
     }
   },
   "eu.kanade.tachiyomi.extension.en.mangafire": {
@@ -71,12 +71,12 @@
   },
   "eu.kanade.tachiyomi.extension.en.onisaga": {
     "apk": {
-      "name": "tachiyomi-en.onisaga-v1.6.4.apk",
-      "sha256": "f2a014f141c3f19c1ef0d4b75552ef10ee991530f1eb5940035935ca40b1e388"
+      "name": "tachiyomi-en.onisaga-v1.6.5.apk",
+      "sha256": "ed258d18234a8b9f93c62660a95e09a0a1ceb4c695dddf91be7e89cee4c58082"
     },
     "jar": {
-      "name": "tachiyomi-en.onisaga-v1.6.4.jar",
-      "sha256": "cc83a3afb3c6969a6a89f001261f1a8c4eea246cf8cca646c3cc4055a29001ed"
+      "name": "tachiyomi-en.onisaga-v1.6.5.jar",
+      "sha256": "37a90174dfc2d58e77c0320b982ff303fb44a4c30ae67229675df2dc48c3abc7"
     }
   },
   "eu.kanade.tachiyomi.extension.pt.astratoons": {

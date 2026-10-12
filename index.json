@@ -78,13 +78,13 @@
         "name": "Kagane",
         "packageName": "eu.kanade.tachiyomi.extension.en.kagane",
         "resources": {
-          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/9b120a8/tachiyomi-en.kagane-v1.6.31.apk",
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/a2b90ea/tachiyomi-en.kagane-v1.6.32.apk",
           "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/en/kagane/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/9b120a8/tachiyomi-en.kagane-v1.6.31.jar"
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/a2b90ea/tachiyomi-en.kagane-v1.6.32.jar"
         },
         "extensionLib": "1.6",
-        "versionCode": "31",
-        "versionName": "1.6.31",
+        "versionCode": "32",
+        "versionName": "1.6.32",
         "contentWarning": "CONTENT_WARNING_MIXED",
         "sources": [
           {
@@ -120,13 +120,13 @@
         "name": "MangaDot",
         "packageName": "eu.kanade.tachiyomi.extension.en.mangadot",
         "resources": {
-          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.mangadot-v1.6.1.apk",
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/a2b90ea/tachiyomi-en.mangadot-v1.6.2.apk",
           "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/en/mangadot/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.mangadot-v1.6.1.jar"
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/a2b90ea/tachiyomi-en.mangadot-v1.6.2.jar"
         },
         "extensionLib": "1.6",
-        "versionCode": "1",
-        "versionName": "1.6.1",
+        "versionCode": "2",
+        "versionName": "1.6.2",
         "contentWarning": "CONTENT_WARNING_MIXED",
         "sources": [
           {
@@ -162,13 +162,13 @@
         "name": "OniSaga",
         "packageName": "eu.kanade.tachiyomi.extension.en.onisaga",
         "resources": {
-          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.onisaga-v1.6.4.apk",
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/a2b90ea/tachiyomi-en.onisaga-v1.6.5.apk",
           "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/en/onisaga/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-en.onisaga-v1.6.4.jar"
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/a2b90ea/tachiyomi-en.onisaga-v1.6.5.jar"
         },
         "extensionLib": "1.6",
-        "versionCode": "4",
-        "versionName": "1.6.4",
+        "versionCode": "5",
+        "versionName": "1.6.5",
         "contentWarning": "CONTENT_WARNING_MIXED",
         "sources": [
           {
