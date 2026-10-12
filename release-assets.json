@@ -201,12 +201,12 @@
   },
   "eu.kanade.tachiyomi.extension.pt.mangotoons": {
     "apk": {
-      "name": "tachiyomi-pt.mangotoons-v1.6.2.apk",
-      "sha256": "f021a312f85bf123d5b9e7aafb208acb89a3f55d34a7b7d2f38060a910891d95"
+      "name": "tachiyomi-pt.mangotoons-v1.6.3.apk",
+      "sha256": "38ce4c29f00c787808594b7ff7afe4b360cc58bd522ad08e4d27008eeefbf9e4"
     },
     "jar": {
-      "name": "tachiyomi-pt.mangotoons-v1.6.2.jar",
-      "sha256": "5dacdaba12e8eaf2a160d85cc334aeb24a204e7bb7c3b2c48273b39e8c92cda5"
+      "name": "tachiyomi-pt.mangotoons-v1.6.3.jar",
+      "sha256": "b78919d2a42c07e63559a78fdaca2f1d4221eb9a373b248b4b2565dbbb992ac4"
     }
   },
   "eu.kanade.tachiyomi.extension.pt.nexusmangas": {
