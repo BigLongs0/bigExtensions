@@ -139,16 +139,6 @@
       "sha256": "c301c996145ed82b1a6b4848287d04e90b101df8f42c684f9ef851dd620f95ed"
     }
   },
-  "eu.kanade.tachiyomi.extension.pt.loverstoon": {
-    "apk": {
-      "name": "tachiyomi-pt.loverstoon-v1.6.1.apk",
-      "sha256": "283b3d19e6c3fdd5742c0d23ecff97c025edf19d5c1dcc4d7288d3a1265064ab"
-    },
-    "jar": {
-      "name": "tachiyomi-pt.loverstoon-v1.6.1.jar",
-      "sha256": "60938ea24a51156caf4a4b0668d2c08bd80b64082acd15b53eacb695dccebf43"
-    }
-  },
   "eu.kanade.tachiyomi.extension.pt.lycantoons": {
     "apk": {
       "name": "tachiyomi-pt.lycantoons-v1.6.2.apk",

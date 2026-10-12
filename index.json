@@ -306,27 +306,6 @@
         ]
       },
       {
-        "name": "LoversToon",
-        "packageName": "eu.kanade.tachiyomi.extension.pt.loverstoon",
-        "resources": {
-          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.loverstoon-v1.6.1.apk",
-          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/loverstoon/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/5214c83/tachiyomi-pt.loverstoon-v1.6.1.jar"
-        },
-        "extensionLib": "1.6",
-        "versionCode": "1",
-        "versionName": "1.6.1",
-        "contentWarning": "CONTENT_WARNING_MIXED",
-        "sources": [
-          {
-            "id": "8973268620385396038",
-            "name": "LoversToon",
-            "language": "pt-BR",
-            "homeUrl": "https://loverstoon.net"
-          }
-        ]
-      },
-      {
         "name": "LycanToons",
         "packageName": "eu.kanade.tachiyomi.extension.pt.lycantoons",
         "resources": {
