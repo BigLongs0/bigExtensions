@@ -21,9 +21,9 @@ import java.time.ZoneOffset
 
 const val HOSTNAME_PART = "kuromangas.com::v2"
 const val ANTIBOT = "x9_4v2_b"
-const val DEFAULT_ENC_KEY = "i7ato8l6sai74jyIHfE2oMmieshoforanuYTusF4jKdqEwhUEft9dsadcxzsaipnjm8"
-const val TOKEN_HEADER = "X-Client-Token"
-const val TOKEN_COOKIE = "_kn"
+const val DEFAULT_ENC_KEY = "8at7vo8l6sai74jyIHfE2oeshoforanuYTusF4jKdqEwhUEft9dsadcxzsaipnjm8"
+const val TOKEN_HEADER = "X-Request-Ctx"
+const val TOKEN_COOKIE = "_vx"
 private const val BODY_PEEK_BYTES = 512L
 private const val LOGIN_EXPIRED_MESSAGE = "Sessão recusada pelo site. Refaça o login no WebView ou revise email e senha nas configurações."
 

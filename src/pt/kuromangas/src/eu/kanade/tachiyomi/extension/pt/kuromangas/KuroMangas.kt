@@ -218,11 +218,11 @@ abstract class KuroMangas :
         return hasSession()
     }
 
-    // The API rejects a request whose X-Client-Token does not match the token cookie, so a
+    // The API rejects a request whose X-Request-Ctx does not match the token cookie, so a
     // session without it is useless even though the JWT is still valid.
     private fun hasSession(): Boolean = client.getCookie(baseUrl, SESSION_COOKIE) != null && client.getCookie(baseUrl, TOKEN_COOKIE) != null
 
-    // Implicit set-cookie: kuro_session and _kn
+    // Implicit set-cookie: kuro_session and _vx
     private fun login(email: String, password: String) {
         // Without rememberMe both cookies come back for the session only, forcing a login per app start.
         val requestBody = LoginDto(email, password, rememberMe = true).toJsonRequestBody()
