@@ -222,6 +222,27 @@
         ]
       },
       {
+        "name": "Blitz Toons",
+        "packageName": "eu.kanade.tachiyomi.extension.pt.blitztoons",
+        "resources": {
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/f25b128/tachiyomi-pt.blitztoons-v1.6.1.apk",
+          "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/blitztoons/res/mipmap-xhdpi/ic_launcher.png",
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/f25b128/tachiyomi-pt.blitztoons-v1.6.1.jar"
+        },
+        "extensionLib": "1.6",
+        "versionCode": "1",
+        "versionName": "1.6.1",
+        "contentWarning": "CONTENT_WARNING_MIXED",
+        "sources": [
+          {
+            "id": "2916575821827748941",
+            "name": "Blitz Toons",
+            "language": "pt-BR",
+            "homeUrl": "https://blitztoons.com"
+          }
+        ]
+      },
+      {
         "name": "CorujaToon",
         "packageName": "eu.kanade.tachiyomi.extension.pt.corujatoon",
         "resources": {
@@ -474,23 +495,23 @@
         ]
       },
       {
-        "name": "NoxManga",
+        "name": "WiComix",
         "packageName": "eu.kanade.tachiyomi.extension.pt.remangas",
         "resources": {
-          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/e26a08c/tachiyomi-pt.remangas-v1.6.55.apk",
+          "apkUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/f25b128/tachiyomi-pt.remangas-v1.6.56.apk",
           "iconUrl": "https://cdn.jsdelivr.net/gh/BigLongs0/bigExtensions@main/src/pt/remangas/res/mipmap-xhdpi/ic_launcher.png",
-          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/e26a08c/tachiyomi-pt.remangas-v1.6.55.jar"
+          "jarUrl": "https://github.com/BigLongs0/bigExtensions/releases/download/f25b128/tachiyomi-pt.remangas-v1.6.56.jar"
         },
         "extensionLib": "1.6",
-        "versionCode": "55",
-        "versionName": "1.6.55",
+        "versionCode": "56",
+        "versionName": "1.6.56",
         "contentWarning": "CONTENT_WARNING_MIXED",
         "sources": [
           {
             "id": "7462657023971681136",
-            "name": "NoxManga",
+            "name": "WiComix",
             "language": "pt-BR",
-            "homeUrl": "https://noxmangas.org"
+            "homeUrl": "https://loobyt.org"
           }
         ]
       },

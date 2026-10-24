@@ -99,6 +99,16 @@
       "sha256": "e4833f7b96baf66cc5aab76bec2e64b85c0872834044f5a9e46747275770ab78"
     }
   },
+  "eu.kanade.tachiyomi.extension.pt.blitztoons": {
+    "apk": {
+      "name": "tachiyomi-pt.blitztoons-v1.6.1.apk",
+      "sha256": "61ac3b828fb5b31c8b735b0dbf1dd6e43d73a616b9ecfdc1850b5b7ccdd18078"
+    },
+    "jar": {
+      "name": "tachiyomi-pt.blitztoons-v1.6.1.jar",
+      "sha256": "377a8f22d820dfa0295a2011db904d746d90735fd0a33c8059f8dd2756df9da6"
+    }
+  },
   "eu.kanade.tachiyomi.extension.pt.corujatoon": {
     "apk": {
       "name": "tachiyomi-pt.corujatoon-v1.6.4.apk",
@@ -221,12 +231,12 @@
   },
   "eu.kanade.tachiyomi.extension.pt.remangas": {
     "apk": {
-      "name": "tachiyomi-pt.remangas-v1.6.55.apk",
-      "sha256": "bb736e48e76de6bcc890aa5d15af08a26b9bc509f2571e6cf1b4dea68bd7dc05"
+      "name": "tachiyomi-pt.remangas-v1.6.56.apk",
+      "sha256": "053f4fe8da4565e99be61ffaa3f5a2bca299bdbb5c74362fa3a7ac46181c3592"
     },
     "jar": {
-      "name": "tachiyomi-pt.remangas-v1.6.55.jar",
-      "sha256": "e7d12c1a70fef5707502e95a0aee2ee61319bf1f30958fd4edd7ce55c51a39df"
+      "name": "tachiyomi-pt.remangas-v1.6.56.jar",
+      "sha256": "76097fdba0b7b65df20e894449c4d6f8987ce641175b85f034262bec260f6cda"
     }
   },
   "eu.kanade.tachiyomi.extension.pt.sssscanlator": {
