@@ -1,7 +1,6 @@
 package eu.kanade.tachiyomi.extension.pt.kuromangas
 
 import android.util.Base64
-import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.util.asJsoup
 import keiyoushi.utils.parseAs
 import keiyoushi.utils.readIntBigEndian
@@ -88,12 +87,12 @@ class KuroMangasDecryptor(
 
     // Only worth paying for on a decryption failure: the bundle weighs several megabytes.
     fun reloadEncryptionKey() {
-        val indexJsUrl = client.newCall(GET(baseUrl)).execute()
+        val indexJsUrl = client.newCall(Request.Builder().url(baseUrl).build()).execute()
             .asJsoup()
             .selectFirst("script[src*=index]")
             ?.absUrl("src") ?: return
 
-        val js = client.newCall(GET(indexJsUrl)).execute().body.string()
+        val js = client.newCall(Request.Builder().url(indexJsUrl).build()).execute().use { it.body.string() }
 
         encKeyRegex.find(js)?.groupValues?.get(1)?.let { viteApiEncKey = it }
     }

@@ -2,109 +2,91 @@ package eu.kanade.tachiyomi.extension.pt.kuromangas
 
 import androidx.preference.EditTextPreference
 import androidx.preference.PreferenceScreen
-import eu.kanade.tachiyomi.network.GET
-import eu.kanade.tachiyomi.network.POST
 import eu.kanade.tachiyomi.source.ConfigurableSource
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.model.SChapter
 import eu.kanade.tachiyomi.source.model.SManga
-import eu.kanade.tachiyomi.source.online.HttpSource
+import eu.kanade.tachiyomi.source.model.SMangaUpdate
 import keiyoushi.annotation.Source
+import keiyoushi.network.get
 import keiyoushi.network.rateLimit
+import keiyoushi.source.KeiSource
 import keiyoushi.utils.firstInstanceOrNull
 import keiyoushi.utils.getPreferencesLazy
 import keiyoushi.utils.parseAs
 import keiyoushi.utils.toJsonRequestBody
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.serialization.json.JsonElement
 import okhttp3.Headers
+import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.Response
 import java.io.IOException
 
 @Source
 abstract class KuroMangas :
-    HttpSource(),
+    KeiSource(),
     ConfigurableSource {
-
-    override val supportsLatest = true
 
     private val preferences by getPreferencesLazy()
 
-    private val apiUrl = "$baseUrl/api"
+    private val apiUrl get() = "$baseUrl/api"
 
     private val cdnUrl = "https://cdn.kuromangas.com"
 
-    private val decryptor by lazy { KuroMangasDecryptor(baseUrl, network.client, ::relogin) }
+    private val apiHost get() = baseUrl.toHttpUrl().host
 
-    private val apiHost = baseUrl.toHttpUrl().host
+    override fun OkHttpClient.Builder.configureClient(): OkHttpClient.Builder = apply {
+        addInterceptor { chain ->
+            val request = chain.request()
+            if (request.url.host != apiHost) return@addInterceptor chain.proceed(request)
+            if (!checkLogin()) throw IOException(LOGIN_REQUIRED_MESSAGE)
+            chain.proceed(request)
+        }
 
-    override val client by lazy {
+        addInterceptor(KuroMangasDecryptor(baseUrl, network.client, ::relogin).vSecureInterceptor())
 
-        network.client.newBuilder()
-            .apply {
-                addInterceptor { chain ->
-                    val request = chain.request()
-                    if (request.url.host != apiHost) return@addInterceptor chain.proceed(request)
-                    if (!checkLogin()) throw IOException(LOGIN_REQUIRED_MESSAGE)
-                    return@addInterceptor chain.proceed(request)
-                }
-
-                addInterceptor(decryptor.vSecureInterceptor())
-            }
-            // Unscoped, this also throttles the CDN, and a chapter is 120 images.
-            .rateLimit(2, shouldLimit = { it.host == apiHost })
-            .build()
+        // Unscoped, this also throttles the CDN, and a chapter is 120 images.
+        rateLimit(2) { it.host == apiHost }
     }
 
-    override fun headersBuilder(): Headers.Builder = super.headersBuilder()
-        .add("Accept", "application/json, text/plain, */*")
-        .add("Accept-Language", "pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3")
-        .add("Referer", "$baseUrl/catalogo")
-        .add("Sec-Fetch-Dest", "empty")
-        .add("Sec-Fetch-Mode", "cors")
-        .add("Sec-Fetch-Site", "same-origin")
+    // The site's own API calls are same-origin, so they carry no Origin header.
+    override fun Headers.Builder.configureHeaders(): Headers.Builder = this
+        .removeAll("Origin")
+        .set("Accept", "application/json, text/plain, */*")
+        .set("Accept-Language", "pt-BR,pt;q=0.8,en-US;q=0.5,en;q=0.3")
+        .set("Referer", "$baseUrl/catalogo")
+        .set("Sec-Fetch-Dest", "empty")
+        .set("Sec-Fetch-Mode", "cors")
+        .set("Sec-Fetch-Site", "same-origin")
 
-    // ============================= Popular ================================
-
-    override fun popularMangaRequest(page: Int): Request {
+    override suspend fun getPopularManga(page: Int): MangasPage {
         val url = "$apiUrl/mangas".toHttpUrl().newBuilder()
             .addQueryParameter("page", page.toString())
             .addQueryParameter("limit", PAGE_LIMIT.toString())
             .addQueryParameter("sort", "view_count")
             .addQueryParameter("order", "DESC")
             .build()
-        return GET(url, headers)
+
+        return client.get(url).parseAs<MangaListResponse>().toMangasPage()
     }
 
-    override fun popularMangaParse(response: Response): MangasPage {
-        val result = response.parseAs<MangaListResponse>()
-        val mangas = result.data.map { it.toSManga(cdnUrl) }
-        return MangasPage(mangas, result.pagination.hasNextPage())
-    }
-
-    // ============================= Latest =================================
-
-    override fun latestUpdatesRequest(page: Int): Request {
+    override suspend fun getLatestUpdates(page: Int): MangasPage {
         val url = "$apiUrl/chapters/recent".toHttpUrl().newBuilder()
             .addQueryParameter("page", page.toString())
             .addQueryParameter("limit", PAGE_LIMIT.toString())
             .addQueryParameter("days", "30")
             .build()
-        return GET(url, headers)
+
+        val result = client.get(url).parseAs<LatestResponse>()
+        return MangasPage(result.data.map { it.toSManga(cdnUrl) }, result.pagination.hasNextPage())
     }
 
-    override fun latestUpdatesParse(response: Response): MangasPage {
-        val result = response.parseAs<LatestResponse>()
-        val mangas = result.data.map { it.toSManga(cdnUrl) }
-        return MangasPage(mangas, result.pagination.hasNextPage())
-    }
-
-    // ============================= Search =================================
-
-    override fun searchMangaRequest(page: Int, query: String, filters: FilterList): Request {
+    override suspend fun getSearchMangaList(page: Int, query: String, filters: FilterList): MangasPage {
         val url = "$apiUrl/mangas".toHttpUrl().newBuilder()
             .addQueryParameter("page", page.toString())
             .addQueryParameter("limit", PAGE_LIMIT.toString())
@@ -121,71 +103,71 @@ abstract class KuroMangas :
             url.addQueryParameter("order", "DESC")
         }
 
-        return GET(url.build(), headers)
+        return client.get(url.build()).parseAs<MangaListResponse>().toMangasPage()
     }
 
-    override fun searchMangaParse(response: Response): MangasPage {
-        val result = response.parseAs<MangaListResponse>()
-        val mangas = result.data.map { it.toSManga(cdnUrl) }
-        return MangasPage(mangas, result.pagination.hasNextPage())
+    private fun MangaListResponse.toMangasPage() = MangasPage(data.map { it.toSManga(cdnUrl) }, pagination.hasNextPage())
+
+    override suspend fun getMangaByUrl(url: HttpUrl): SManga? {
+        if (url.pathSegments.firstOrNull() !in MANGA_PATH_SEGMENTS) return null
+        val mangaId = url.pathSegments.getOrNull(1)?.toIntOrNull() ?: return null
+        val manga = SManga.create().apply { this.url = "/manga/$mangaId" }
+
+        return fetchMangaUpdate(manga, emptyList(), fetchDetails = true, fetchChapters = false)
+            .manga
+            .apply { initialized = true }
     }
 
-    // ============================= Details ================================
+    override suspend fun fetchMangaUpdate(
+        manga: SManga,
+        chapters: List<SChapter>,
+        fetchDetails: Boolean,
+        fetchChapters: Boolean,
+    ): SMangaUpdate = coroutineScope {
+        val mangaId = manga.url.substringAfterLast("/").toInt()
 
-    override fun mangaDetailsRequest(manga: SManga): Request {
-        val mangaId = manga.url.substringAfterLast("/")
-        return GET("$apiUrl/mangas/$mangaId", headers)
+        val details = async {
+            if (fetchDetails) {
+                client.get("$apiUrl/mangas/$mangaId").parseAs<MangaDetailsResponse>().manga.toSManga(cdnUrl)
+            } else {
+                manga
+            }
+        }
+
+        // The details endpoint only carries the newest 60 chapters, so the whole list is requested here.
+        val chapterList = async {
+            if (fetchChapters) {
+                val url = "$apiUrl/mangas/$mangaId/chapters".toHttpUrl().newBuilder()
+                    .addQueryParameter("all", "true")
+                    .build()
+
+                client.get(url).parseAs<ChapterListResponse>().chapters
+                    .map { it.toSChapter(mangaId) }
+                    .sortedByDescending { it.chapter_number }
+            } else {
+                chapters
+            }
+        }
+
+        SMangaUpdate(manga = details.await(), chapters = chapterList.await())
     }
 
-    override fun mangaDetailsParse(response: Response): SManga {
-        val result = response.parseAs<MangaDetailsResponse>()
-        return result.manga.toSManga(cdnUrl)
-    }
-
-    // ============================= Chapters ===============================
-
-    // The details endpoint only carries the newest 60 chapters, so the whole list is requested here.
-    override fun chapterListRequest(manga: SManga): Request {
-        val mangaId = manga.url.substringAfterLast("/")
-        val url = "$apiUrl/mangas/$mangaId/chapters".toHttpUrl().newBuilder()
-            .addQueryParameter("all", "true")
-            .build()
-        return GET(url, headers)
-    }
-
-    override fun chapterListParse(response: Response): List<SChapter> {
-        val mangaId = response.request.url.pathSegments.let { it[it.lastIndex - 1] }.toInt()
-        return response.parseAs<ChapterListResponse>().chapters
-            .map { it.toSChapter(mangaId) }
-            .sortedByDescending { it.chapter_number }
-    }
-
-    // ============================= Pages ==================================
-
-    override fun pageListRequest(chapter: SChapter): Request {
+    override suspend fun getPageList(chapter: SChapter): List<Page> {
         val chapterId = chapter.url.substringAfterLast("/")
-        return GET("$apiUrl/chapters/$chapterId", headers)
-    }
 
-    override fun pageListParse(response: Response): List<Page> {
-        val chapterResponse = response.parseAs<ChapterPagesResponse>()
-        return chapterResponse.pages.mapIndexed { index, pageUrl ->
-            val fixedUrl = pageUrl.replaceFirst("^/uploads/".toRegex(), "/")
+        return client.get("$apiUrl/chapters/$chapterId").parseAs<ChapterPagesResponse>().pages.mapIndexed { index, pageUrl ->
+            val fixedUrl = pageUrl.replaceFirst(UPLOADS_PREFIX_REGEX, "/")
             val imageUrl = if (fixedUrl.startsWith("http")) fixedUrl else "$cdnUrl$fixedUrl"
             Page(index, imageUrl = imageUrl)
         }
     }
 
-    override fun imageUrlParse(response: Response): String = throw UnsupportedOperationException()
+    override fun imageRequest(page: Page): Request = Request.Builder()
+        .url(page.imageUrl!!)
+        .headers(headersBuilder().set("Referer", "$baseUrl/").build())
+        .build()
 
-    override fun imageRequest(page: Page): Request {
-        val newHeaders = headersBuilder()
-            .set("Referer", "$baseUrl/")
-            .build()
-        return GET(page.imageUrl!!, newHeaders)
-    }
-
-    // ============================= Utils ==================================
+    override fun getFilterList(data: JsonElement?): FilterList = getFilters()
 
     override fun getMangaUrl(manga: SManga): String {
         val mangaId = manga.url.substringAfterLast("/")
@@ -225,8 +207,11 @@ abstract class KuroMangas :
     // Implicit set-cookie: kuro_session and _vx
     private fun login(email: String, password: String) {
         // Without rememberMe both cookies come back for the session only, forcing a login per app start.
-        val requestBody = LoginDto(email, password, rememberMe = true).toJsonRequestBody()
-        val request = POST("$apiUrl/auth/login", headers, requestBody)
+        val request = Request.Builder()
+            .url("$apiUrl/auth/login")
+            .headers(headers)
+            .post(LoginDto(email, password, rememberMe = true).toJsonRequestBody())
+            .build()
         network.client.newCall(request).execute().close()
     }
 
@@ -259,14 +244,14 @@ abstract class KuroMangas :
         }.let(screen::addPreference)
     }
 
-    override fun getFilterList() = getFilters()
-
     companion object {
         private const val PAGE_LIMIT = 24
         private const val PREF_EMAIL = "kuromangas_email"
         private const val PREF_PASSWORD = "kuromangas_password"
         private const val SESSION_COOKIE = "kuro_session"
         private const val LOGIN_REQUIRED_MESSAGE = "Faça login no WebView ou insira email e senha nas configurações e tente novamente."
+        private val MANGA_PATH_SEGMENTS = listOf("manga", "reader")
+        private val UPLOADS_PREFIX_REGEX = Regex("^/uploads/")
     }
 }
 
