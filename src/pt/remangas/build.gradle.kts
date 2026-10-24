@@ -5,14 +5,14 @@ plugins {
 }
 
 keiyoushi {
-    name = "NoxManga"
-    versionCode = 55
+    name = "WiComix"
+    versionCode = 56
     contentWarning = ContentWarning.MIXED
     libVersion = "1.6"
 
     source {
         lang = "pt-BR"
-        baseUrl = "https://noxmangas.org"
+        baseUrl = "https://loobyt.org"
         id = 7462657023971681136
     }
 }

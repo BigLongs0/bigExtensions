@@ -24,7 +24,7 @@ import okhttp3.OkHttpClient
 import kotlin.time.Duration.Companion.seconds
 
 @Source
-abstract class NoxManga : KeiSource() {
+abstract class WiComix : KeiSource() {
 
     private val apiUrl get() = "$baseUrl/api/v1"
 
